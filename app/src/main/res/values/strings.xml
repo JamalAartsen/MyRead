@@ -3,4 +3,6 @@
     <string name="intro_title">Welcome to MyRead!</string>
     <string name="intro_subtitle">The app that reads the text aloud on your screen</string>
     <string name="get_started">Get Started</string>
+    <!-- TODO: Remove or change this placeholder text -->
+    <string name="hello_blank_fragment">Hello blank fragment</string>
 </resources>
