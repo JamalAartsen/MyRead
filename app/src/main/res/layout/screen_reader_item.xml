@@ -8,30 +8,38 @@
         android:layout_width="80dp"
         android:layout_height="wrap_content">
 
-        <com.google.android.material.floatingactionbutton.FloatingActionButton
+        <LinearLayout
             android:id="@+id/close_btn"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
+            android:layout_width="35dp"
+            android:layout_height="35dp"
             android:layout_alignParentEnd="true"
-            app:backgroundTint="@color/red"
-            app:elevation="0dp"
-            app:fabCustomSize="25dp"
-            app:maxImageSize="20dp"
-            app:srcCompat="@drawable/ic_close"
-            app:tint="@color/white"
-            app:useCompatPadding="false" />
+            android:background="@drawable/round_button"
+            android:gravity="center"
+            android:textColor="@color/black">
 
-        <com.google.android.material.floatingactionbutton.FloatingActionButton
+            <ImageView
+                android:layout_width="25dp"
+                android:layout_height="25dp"
+                android:contentDescription="@string/close_image"
+                android:src="@drawable/ic_close" />
+
+        </LinearLayout>
+
+        <LinearLayout
             android:id="@+id/reader_btn"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
+            android:layout_width="60dp"
+            android:layout_height="60dp"
             android:layout_below="@id/close_btn"
-            android:layout_marginTop="-10dp"
-            android:contentDescription="@string/readericon"
-            app:backgroundTint="@color/dark_purple"
-            app:elevation="0dp"
-            app:srcCompat="@drawable/ic_baseline_camera_alt_24"
-            app:tint="@color/white" />
+            android:background="@drawable/round_button_camera"
+            android:gravity="center"
+            app:backgroundTint="@color/dark_purple">
+
+            <ImageView
+                android:layout_width="30dp"
+                android:layout_height="30dp"
+                android:contentDescription="@string/camere_image"
+                android:src="@drawable/ic_baseline_camera_alt_24" />
+        </LinearLayout>
     </RelativeLayout>
 
 </RelativeLayout>

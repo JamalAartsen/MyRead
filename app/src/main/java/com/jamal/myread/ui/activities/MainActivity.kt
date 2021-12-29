@@ -1,16 +1,16 @@
-package com.jamal.myread
+package com.jamal.myread.ui.activities
 
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.util.Log
 import android.view.View
 import androidx.core.content.ContextCompat
-import androidx.navigation.NavController
-import androidx.navigation.NavDestination
 import androidx.navigation.fragment.NavHostFragment
-import androidx.navigation.fragment.findNavController
+import com.jamal.myread.R
 import com.jamal.myread.databinding.ActivityMainBinding
+import dagger.hilt.android.AndroidEntryPoint
 
+@AndroidEntryPoint
 class MainActivity : AppCompatActivity() {
 
     private val TAG = "MainActivity"

@@ -7,4 +7,6 @@
     <string name="hello_blank_fragment">Hello blank fragment</string>
     <string name="start">Start</string>
     <string name="readericon">ReaderIcon</string>
+    <string name="camere_image">Camere Image</string>
+    <string name="close_image">Close Image</string>
 </resources>

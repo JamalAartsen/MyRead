@@ -7,7 +7,7 @@
 
     <fragment
         android:id="@+id/getStartedFragment"
-        android:name="com.jamal.myread.GetStartedFragment"
+        android:name="com.jamal.myread.ui.fragments.GetStartedFragment"
         android:label="fragment_get_started"
         tools:layout="@layout/fragment_get_started" >
         <action
@@ -16,7 +16,7 @@
     </fragment>
     <fragment
         android:id="@+id/homeFragment"
-        android:name="com.jamal.myread.HomeFragment"
+        android:name="com.jamal.myread.ui.fragments.HomeFragment"
         android:label="fragment_home"
         tools:layout="@layout/fragment_home" />
 </navigation>
