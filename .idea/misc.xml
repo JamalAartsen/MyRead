@@ -4,7 +4,9 @@
     <option name="filePathToZoomLevelMap">
       <map>
         <entry key="..\:/androidprojecten/MyRead/MyRead/app/src/main/res/drawable/btn_bg.xml" value="0.3769230769230769" />
+        <entry key="..\:/androidprojecten/MyRead/MyRead/app/src/main/res/drawable/ic_baseline_camera_alt_24.xml" value="0.3828125" />
         <entry key="..\:/androidprojecten/MyRead/MyRead/app/src/main/res/drawable/ic_bg.xml" value="0.3769230769230769" />
+        <entry key="..\:/androidprojecten/MyRead/MyRead/app/src/main/res/drawable/ic_close.xml" value="0.3828125" />
         <entry key="..\:/androidprojecten/MyRead/MyRead/app/src/main/res/drawable/ic_icon_logo.xml" value="0.22135416666666666" />
         <entry key="..\:/androidprojecten/MyRead/MyRead/app/src/main/res/drawable/splash_image.xml" value="0.22135416666666666" />
         <entry key="..\:/androidprojecten/MyRead/MyRead/app/src/main/res/font/ubuntu.xml" value="0.2942084942084942" />
@@ -12,6 +14,7 @@
         <entry key="..\:/androidprojecten/MyRead/MyRead/app/src/main/res/layout/activity_main.xml" value="0.33" />
         <entry key="..\:/androidprojecten/MyRead/MyRead/app/src/main/res/layout/fragment_get_started.xml" value="0.25416666666666665" />
         <entry key="..\:/androidprojecten/MyRead/MyRead/app/src/main/res/layout/fragment_home.xml" value="0.25" />
+        <entry key="..\:/androidprojecten/MyRead/MyRead/app/src/main/res/layout/screen_reader_item.xml" value="1.1" />
         <entry key="..\:/androidprojecten/MyRead/MyRead/app/src/main/res/mipmap-anydpi-v26/ic_launcher_round.xml" value="0.3769230769230769" />
       </map>
     </option>

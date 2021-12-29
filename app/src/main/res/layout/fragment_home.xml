@@ -22,4 +22,6 @@
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
 
+    <include layout="@layout/screen_reader_item" />
+
 </androidx.constraintlayout.widget.ConstraintLayout>
