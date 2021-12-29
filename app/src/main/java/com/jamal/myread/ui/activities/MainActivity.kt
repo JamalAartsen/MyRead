@@ -30,10 +30,8 @@ class MainActivity : AppCompatActivity() {
         navController.addOnDestinationChangedListener { _, destination, _ ->
             if (destination.id == R.id.getStartedFragment) {
                 binding.toolbar.visibility = View.GONE
-                Log.d(TAG, "onCreate: Good")
             } else {
                 binding.toolbar.visibility = View.VISIBLE
-                Log.d(TAG, "onCreate: ${destination.id} ${R.id.getStartedFragment}")
             }
 
         }

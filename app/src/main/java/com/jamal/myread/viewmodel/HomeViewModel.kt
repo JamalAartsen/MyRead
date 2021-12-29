@@ -2,6 +2,8 @@ package com.jamal.myread.viewmodel
 
 import android.app.Activity
 import android.content.Context
+import android.os.Build
+import android.provider.Settings
 import androidx.lifecycle.ViewModel
 import com.jamal.myread.model.HomeRepository
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -14,5 +16,11 @@ class HomeViewModel @Inject constructor(
 
     fun startService(activity: Activity, context: Context) {
         repository.startService(activity, context)
+    }
+
+    fun checkOverlayPermission(context: Context) : Boolean {
+        return if (Build.VERSION.SDK_INT > Build.VERSION_CODES.M) {
+            Settings.canDrawOverlays(context)
+        } else return true
     }
 }

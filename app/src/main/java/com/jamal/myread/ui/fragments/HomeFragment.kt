@@ -21,6 +21,8 @@ import com.jamal.myread.model.ScreenReaderService
 import com.jamal.myread.viewmodel.HomeViewModel
 import dagger.hilt.android.AndroidEntryPoint
 
+private const val ALERT_DIALOG = "AlertDialog"
+
 @AndroidEntryPoint
 class HomeFragment : Fragment(R.layout.fragment_home) {
 
@@ -47,50 +49,12 @@ class HomeFragment : Fragment(R.layout.fragment_home) {
         super.onViewCreated(view, savedInstanceState)
 
         binding.startButton.setOnClickListener {
-            if (checkOverlayPermission()) {
+            if (viewModel.checkOverlayPermission(requireContext())) {
                 viewModel.startService(requireActivity(), requireContext())
             } else {
-                requestFloatingButtonPermission()
+                AlertDialogFragment().show(parentFragmentManager, ALERT_DIALOG)
             }
         }
-    }
-
-
-    val getResult = registerForActivityResult(
-        ActivityResultContracts.StartActivityForResult()
-    ) {
-        if (it.resultCode == Activity.RESULT_OK) {
-            Log.d(TAG, "GetResult is called")
-        } else {
-            Log.d(TAG, "RESULT_OK is false")
-        }
-    }
-
-    private fun requestFloatingButtonPermission() {
-        val builder = AlertDialog.Builder(requireContext())
-        builder.apply {
-            setCancelable(true)
-            setTitle("Screen Overlay Permission Needed")
-            setMessage("Enable 'Display over the App' from settings")
-            setPositiveButton("Open Settings") { dialog, which ->
-                val intent = Intent(
-                    Settings.ACTION_MANAGE_OVERLAY_PERMISSION,
-                    Uri.parse("package:${requireContext().packageName}")
-                )
-
-
-                getResult.launch(intent)
-                Log.d(TAG, "requestFloatingButtonPermission: Method called")
-            }
-        }
-        dialog = builder.create()
-        dialog.show()
-    }
-
-    private fun checkOverlayPermission(): Boolean {
-        return if (Build.VERSION.SDK_INT > Build.VERSION_CODES.M) {
-            Settings.canDrawOverlays(requireContext())
-        } else return true
     }
 
     override fun onDestroy() {
