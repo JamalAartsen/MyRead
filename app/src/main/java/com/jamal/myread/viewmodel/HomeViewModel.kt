@@ -24,4 +24,8 @@ class HomeViewModel @Inject constructor(
             Settings.canDrawOverlays(context)
         } else return true
     }
+
+    fun stopScreenshot(activity: Activity, context: Context) {
+        repository.stopScreenShot(activity, context)
+    }
 }

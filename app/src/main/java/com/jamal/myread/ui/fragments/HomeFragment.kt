@@ -38,11 +38,14 @@ class HomeFragment : Fragment(R.layout.fragment_home) {
         ActivityResultContracts.StartActivityForResult()
     ) {
         if (it.resultCode == Activity.RESULT_OK) {
+            Log.d(TAG, "dqdwqdq: ")
             viewModel.startService(requireActivity(), requireContext(), it.resultCode, it.data!!)
             Log.d(TAG, "GetResult is called")
         } else {
             Log.d(TAG, "RESULT_OK is false")
         }
+
+        Log.d(TAG, "WWEFEWFFW")
     }
 
     override fun onCreateView(

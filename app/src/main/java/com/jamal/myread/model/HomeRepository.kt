@@ -17,4 +17,8 @@ class HomeRepository @Inject constructor() {
             )
         )
     }
+
+    fun stopScreenShot(activity: Activity, context: Context) {
+        activity.startService(ScreenReaderService.getStopIntent(context))
+    }
 }

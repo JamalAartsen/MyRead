@@ -64,9 +64,11 @@ class ScreenReaderService : Service() {
 
         binding.readerBtn.setOnClickListener {
             Toast.makeText(this, "This is a test!", Toast.LENGTH_SHORT).show()
-            val notification = NotificationUtils.getNotification(this)
-            startForeground(notification!!.first, notification!!.second)
             startProjection(resultCode!!, data)
+
+            Handler(Looper.getMainLooper()).postDelayed({
+                stopProjection()
+            }, 500)
         }
 
         if (Build.VERSION.SDK_INT > Build.VERSION_CODES.O) {
@@ -155,8 +157,11 @@ class ScreenReaderService : Service() {
 
     override fun onStartCommand(intent: Intent, flags: Int, startId: Int): Int {
         if (isStartCommand(intent)) {
-             resultCode = intent.getIntExtra(RESULT_CODE, Activity.RESULT_CANCELED)
-             data = intent.getParcelableExtra<Intent>(DATA)
+            val notification = NotificationUtils.getNotification(this)
+            startForeground(notification!!.first, notification!!.second)
+
+            resultCode = intent.getIntExtra(RESULT_CODE, Activity.RESULT_CANCELED)
+            data = intent.getParcelableExtra<Intent>(DATA)
 
         } else if (isStopCommand(intent)) {
             stopProjection()
@@ -167,31 +172,31 @@ class ScreenReaderService : Service() {
         return START_NOT_STICKY
     }
 
-     fun startProjection(resultCode: Int, data: Intent?) {
+    fun startProjection(resultCode: Int, data: Intent?) {
         val mpManager = getSystemService(MEDIA_PROJECTION_SERVICE) as MediaProjectionManager
-        if (mMediaProjection == null) {
-            mMediaProjection = mpManager.getMediaProjection(resultCode, data!!)
-            if (mMediaProjection != null) {
-                // display metrics
-                mDensity = Resources.getSystem().displayMetrics.densityDpi
-                val windowManager = getSystemService(WINDOW_SERVICE) as WindowManager
-                val defaultDisplay =
-                    getSystemService<DisplayManager>()?.getDisplay(Display.DEFAULT_DISPLAY)
-                mDisplay = defaultDisplay
 
-                // create virtual display depending on device width / height
-                createVirtualDisplay()
+        mMediaProjection = mpManager.getMediaProjection(resultCode, data!!)
+        if (mMediaProjection != null) {
+            // display metrics
+            mDensity = Resources.getSystem().displayMetrics.densityDpi
+            val windowManager = getSystemService(WINDOW_SERVICE) as WindowManager
+            val defaultDisplay =
+                getSystemService<DisplayManager>()?.getDisplay(Display.DEFAULT_DISPLAY)
+            mDisplay = defaultDisplay
 
-                // register orientation change callback
-                mOrientationChangeCallback = OrientationChangeCallback(this)
-                if (mOrientationChangeCallback!!.canDetectOrientation()) {
-                    mOrientationChangeCallback!!.enable()
-                }
+            // create virtual display depending on device width / height
+            createVirtualDisplay()
 
-                // register media projection stop callback
-                mMediaProjection!!.registerCallback(MediaProjectionStopCallback(), mHandler)
+            // register orientation change callback
+            mOrientationChangeCallback = OrientationChangeCallback(this)
+            if (mOrientationChangeCallback!!.canDetectOrientation()) {
+                mOrientationChangeCallback!!.enable()
             }
+
+            // register media projection stop callback
+            mMediaProjection!!.registerCallback(MediaProjectionStopCallback(), mHandler)
         }
+
     }
 
 
@@ -271,7 +276,7 @@ class ScreenReaderService : Service() {
         }
     }
 
-    private inner class OrientationChangeCallback   (context: Context?) :
+    private inner class OrientationChangeCallback(context: Context?) :
         OrientationEventListener(context) {
         override fun onOrientationChanged(orientation: Int) {
             val rotation = mDisplay!!.rotation
