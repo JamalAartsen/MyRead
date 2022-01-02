@@ -3,6 +3,7 @@
     package="com.jamal.myread">
 
     <uses-permission android:name="android.permission.SYSTEM_ALERT_WINDOW" />
+    <uses-permission android:name="android.permission.FOREGROUND_SERVICE" />
 
     <application
         android:name=".MyReadApplication"
@@ -22,7 +23,9 @@
             </intent-filter>
         </activity>
 
-        <service android:name=".model.ScreenReaderService" />
+        <service
+            android:name=".model.ScreenReaderService"
+            android:foregroundServiceType="mediaProjection" />
     </application>
 
 </manifest>

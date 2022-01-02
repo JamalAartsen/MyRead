@@ -2,6 +2,7 @@ package com.jamal.myread.viewmodel
 
 import android.app.Activity
 import android.content.Context
+import android.content.Intent
 import android.os.Build
 import android.provider.Settings
 import androidx.lifecycle.ViewModel
@@ -14,8 +15,8 @@ class HomeViewModel @Inject constructor(
     private val repository: HomeRepository
 ) : ViewModel() {
 
-    fun startService(activity: Activity, context: Context) {
-        repository.startService(activity, context)
+    fun startService(activity: Activity, context: Context, resultCode: Int, data: Intent) {
+        repository.startService(activity, context, resultCode, data)
     }
 
     fun checkOverlayPermission(context: Context) : Boolean {

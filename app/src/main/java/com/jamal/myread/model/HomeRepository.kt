@@ -7,9 +7,14 @@ import javax.inject.Inject
 import javax.inject.Singleton
 
 @Singleton
-class HomeRepository @Inject constructor(private val screenReaderService: ScreenReaderService) {
-
-    fun startService(activity: Activity, context: Context) {
-        activity.startService(Intent(context, screenReaderService::class.java))
+class HomeRepository @Inject constructor() {
+    fun startService(activity: Activity, context: Context, resultCode: Int, data: Intent) {
+        activity.startService(
+            ScreenReaderService.getStartIntent(
+                context,
+                resultCode,
+                data
+            )
+        )
     }
 }

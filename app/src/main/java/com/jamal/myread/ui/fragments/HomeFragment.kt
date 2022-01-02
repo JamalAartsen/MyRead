@@ -3,15 +3,19 @@ package com.jamal.myread.ui.fragments
 import android.app.Activity
 import android.app.AlertDialog
 import android.content.Intent
+import android.media.projection.MediaProjectionManager
 import android.net.Uri
 import android.os.Build
 import android.os.Bundle
+import android.os.Handler
+import android.os.Looper
 import android.provider.Settings
 import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.activity.result.contract.ActivityResultContracts
+import androidx.appcompat.app.AppCompatActivity
 import androidx.core.content.ContextCompat
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
@@ -29,8 +33,17 @@ class HomeFragment : Fragment(R.layout.fragment_home) {
     private var _binding: FragmentHomeBinding? = null
     private val binding get() = _binding!!
     private val TAG = "HomeFragment"
-    private lateinit var dialog: AlertDialog
     private val viewModel by viewModels<HomeViewModel>()
+    private val getResult = registerForActivityResult(
+        ActivityResultContracts.StartActivityForResult()
+    ) {
+        if (it.resultCode == Activity.RESULT_OK) {
+            viewModel.startService(requireActivity(), requireContext(), it.resultCode, it.data!!)
+            Log.d(TAG, "GetResult is called")
+        } else {
+            Log.d(TAG, "RESULT_OK is false")
+        }
+    }
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -50,7 +63,9 @@ class HomeFragment : Fragment(R.layout.fragment_home) {
 
         binding.startButton.setOnClickListener {
             if (viewModel.checkOverlayPermission(requireContext())) {
-                viewModel.startService(requireActivity(), requireContext())
+                val mProjectionManager =
+                    requireActivity().getSystemService(AppCompatActivity.MEDIA_PROJECTION_SERVICE) as MediaProjectionManager
+                getResult.launch(mProjectionManager.createScreenCaptureIntent())
             } else {
                 AlertDialogFragment().show(parentFragmentManager, ALERT_DIALOG)
             }
