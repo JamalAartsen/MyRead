@@ -13,10 +13,7 @@ import android.hardware.display.VirtualDisplay
 import android.media.ImageReader
 import android.media.projection.MediaProjection
 import android.media.projection.MediaProjectionManager
-import android.os.Build
-import android.os.Handler
-import android.os.IBinder
-import android.os.Looper
+import android.os.*
 import android.util.Log
 import android.view.*
 import android.widget.Toast
@@ -65,7 +62,7 @@ class ScreenReaderService : Service() {
         binding.readerBtn.setOnClickListener {
             Toast.makeText(this, "This is a test!", Toast.LENGTH_SHORT).show()
             startProjection(resultCode!!, data)
-
+            getImageFromExternalStorage()
             Handler(Looper.getMainLooper()).postDelayed({
                 stopProjection()
             }, 500)
@@ -155,6 +152,39 @@ class ScreenReaderService : Service() {
         }.start()
     }
 
+    /**
+     * Deletes all images inside the folder.
+     *
+     * @author Jamal Aartsen
+     */
+    private fun deleteAllImagesFromExternalStorage() {
+        val file = File(mStoreDir!!)
+        val fileArray = file.listFiles()
+
+        if (fileArray?.isEmpty() != null) {
+            for (files in fileArray) {
+                files.delete()
+                Log.d(TAG, "deleteAllImagesFromExternalStorage: $files")
+            }
+        }
+    }
+
+    fun getImageFromExternalStorage(): File? {
+        val file = File(mStoreDir!!)
+        val fileArray = file.listFiles()
+        var firstFile: File? = null
+
+        if (fileArray?.isEmpty() != null) {
+            for (files in fileArray) {
+                firstFile = file
+                Log.d(TAG, "getImageFromExternalStorage: $files")
+                break
+            }
+        }
+        
+        return firstFile
+    }
+
     override fun onStartCommand(intent: Intent, flags: Int, startId: Int): Int {
         if (isStartCommand(intent)) {
             val notification = NotificationUtils.getNotification(this)
@@ -165,7 +195,6 @@ class ScreenReaderService : Service() {
 
         } else if (isStopCommand(intent)) {
             stopProjection()
-//            stopSelf()
         } else {
             stopSelf()
         }
