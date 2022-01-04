@@ -15,6 +15,7 @@ import android.media.projection.MediaProjection
 import android.media.projection.MediaProjectionManager
 import android.net.Uri
 import android.os.*
+import android.speech.tts.TextToSpeech
 import android.util.Log
 import android.view.*
 import android.widget.Toast
@@ -29,6 +30,7 @@ import java.io.File
 import java.io.FileOutputStream
 import java.io.IOException
 import java.lang.Exception
+import java.util.*
 
 class ScreenReaderService : Service() {
     private lateinit var floatView: ViewGroup
@@ -51,6 +53,7 @@ class ScreenReaderService : Service() {
     private var resultCode: Int? = null
     private var data: Intent? = null
     val recognizer = TextRecognition.getClient(TextRecognizerOptions.DEFAULT_OPTIONS)
+    lateinit var mTTS: TextToSpeech
 
     override fun onBind(intent: Intent?): IBinder? {
         return null
@@ -71,26 +74,7 @@ class ScreenReaderService : Service() {
             getImageFromExternalStorage()
             Handler(Looper.getMainLooper()).postDelayed({
                 stopProjection()
-                var image: InputImage? = null
-                try {
-                    image = InputImage.fromFilePath(
-                        this, FileProvider.getUriForFile(
-                            this, "com.example.android.fileprovider",
-                            getImageFromExternalStorage()!!
-                        )
-                    )
-                } catch (e: IOException) {
-                    e.printStackTrace()
-                }
-
-                val result = recognizer.process(image!!)
-                    .addOnSuccessListener { visionText ->
-                        Log.d(TAG, "TASK COMPLETED!!! ${visionText.text}")
-                        deleteAllImagesFromExternalStorage()
-                    }
-                    .addOnFailureListener { e ->
-                        Log.d(TAG, "Task failed! $e")
-                    }
+                returnTextFromImage()
             }, 500)
 
         }
@@ -179,6 +163,51 @@ class ScreenReaderService : Service() {
         }.start()
     }
 
+    private fun returnTextFromImage() {
+
+        var image: InputImage? = null
+        try {
+            image = InputImage.fromFilePath(
+                this, FileProvider.getUriForFile(
+                    this, "com.myread.android.fileprovider",
+                    getImageFromExternalStorage()!!
+                )
+            )
+        } catch (e: IOException) {
+            e.printStackTrace()
+        }
+
+        val result = recognizer.process(image!!)
+            .addOnSuccessListener { visionText ->
+                Log.d(TAG, "TASK COMPLETED!!! ${visionText.text}")
+                deleteAllImagesFromExternalStorage()
+
+                mTTS.apply {
+                    setPitch(0.5f)
+                    setSpeechRate(0.5f)
+                    speak(visionText.text, TextToSpeech.QUEUE_FLUSH, null, null)
+                }
+            }
+            .addOnFailureListener { e ->
+                Log.d(TAG, "Task failed! $e")
+            }
+    }
+
+    private fun speak(mTTS: TextToSpeech, text: String) {
+
+//        var pitch = (binding.seekBarPitch.progress / 50).toFloat()
+//        if (pitch < 0.1) pitch = 0.1f
+//
+//        var speed = (binding.seekBarSpeed.progress / 50).toFloat()
+//        if (speed < 0.1) speed = 0.1f
+
+        mTTS.apply {
+//            setPitch(pitch)
+//            setSpeechRate(speed)
+            speak(text, TextToSpeech.QUEUE_FLUSH, null, null);
+        }
+    }
+
     /**
      * Deletes all images inside the folder.
      *
@@ -224,6 +253,22 @@ class ScreenReaderService : Service() {
             stopProjection()
         } else {
             stopSelf()
+        }
+        mTTS = TextToSpeech(this) { status ->
+            if (status == TextToSpeech.SUCCESS) {
+                val result = mTTS?.setLanguage(Locale.ENGLISH)
+
+                if (result == TextToSpeech.LANG_MISSING_DATA
+                    || result == TextToSpeech.LANG_NOT_SUPPORTED) {
+                    Toast.makeText(this, "Language not supported!",
+                        Toast.LENGTH_SHORT).show()
+                } else {
+                    Log.d(TAG, "returnTextFromImage: Hallo")
+                }
+            } else {
+                Toast.makeText(this, "Initialization failed!",
+                    Toast.LENGTH_SHORT).show()
+            }
         }
         return START_NOT_STICKY
     }
