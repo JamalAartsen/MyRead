@@ -13,11 +13,16 @@ import android.hardware.display.VirtualDisplay
 import android.media.ImageReader
 import android.media.projection.MediaProjection
 import android.media.projection.MediaProjectionManager
+import android.net.Uri
 import android.os.*
 import android.util.Log
 import android.view.*
 import android.widget.Toast
+import androidx.core.content.FileProvider
 import androidx.core.content.getSystemService
+import com.google.mlkit.vision.common.InputImage
+import com.google.mlkit.vision.text.TextRecognition
+import com.google.mlkit.vision.text.latin.TextRecognizerOptions
 import com.jamal.myread.NotificationUtils
 import com.jamal.myread.databinding.ScreenReaderItemBinding
 import java.io.File
@@ -45,6 +50,7 @@ class ScreenReaderService : Service() {
     private var mOrientationChangeCallback: OrientationChangeCallback? = null
     private var resultCode: Int? = null
     private var data: Intent? = null
+    val recognizer = TextRecognition.getClient(TextRecognizerOptions.DEFAULT_OPTIONS)
 
     override fun onBind(intent: Intent?): IBinder? {
         return null
@@ -65,7 +71,28 @@ class ScreenReaderService : Service() {
             getImageFromExternalStorage()
             Handler(Looper.getMainLooper()).postDelayed({
                 stopProjection()
+                var image: InputImage? = null
+                try {
+                    image = InputImage.fromFilePath(
+                        this, FileProvider.getUriForFile(
+                            this, "com.example.android.fileprovider",
+                            getImageFromExternalStorage()!!
+                        )
+                    )
+                } catch (e: IOException) {
+                    e.printStackTrace()
+                }
+
+                val result = recognizer.process(image!!)
+                    .addOnSuccessListener { visionText ->
+                        Log.d(TAG, "TASK COMPLETED!!! ${visionText.text}")
+                        deleteAllImagesFromExternalStorage()
+                    }
+                    .addOnFailureListener { e ->
+                        Log.d(TAG, "Task failed! $e")
+                    }
             }, 500)
+
         }
 
         if (Build.VERSION.SDK_INT > Build.VERSION_CODES.O) {
@@ -176,7 +203,7 @@ class ScreenReaderService : Service() {
 
         if (fileArray?.isEmpty() != null) {
             for (files in fileArray) {
-                firstFile = file
+                firstFile = files
                 Log.d(TAG, "getImageFromExternalStorage: $files")
                 break
             }
