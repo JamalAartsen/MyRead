@@ -102,6 +102,8 @@ class ScreenReaderService : Service() {
         windowManager.addView(floatView, floatWindowLayoutParams)
 
         binding.closeBtn.setOnClickListener {
+            mTTS.stop()
+            mTTS.shutdown()
             stopSelf()
             windowManager.removeView(floatView)
         }
