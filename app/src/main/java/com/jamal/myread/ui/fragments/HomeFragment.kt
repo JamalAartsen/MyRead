@@ -19,11 +19,13 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.core.content.ContextCompat
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
+import androidx.lifecycle.lifecycleScope
 import com.jamal.myread.R
 import com.jamal.myread.databinding.FragmentHomeBinding
 import com.jamal.myread.model.ScreenReaderService
 import com.jamal.myread.viewmodel.HomeViewModel
 import dagger.hilt.android.AndroidEntryPoint
+import kotlinx.coroutines.launch
 
 private const val ALERT_DIALOG = "AlertDialog"
 
@@ -34,18 +36,25 @@ class HomeFragment : Fragment(R.layout.fragment_home) {
     private val binding get() = _binding!!
     private val TAG = "HomeFragment"
     private val viewModel by viewModels<HomeViewModel>()
+    private var pitchSeekbar: Float? = null
+    private var speedSeekbar: Float? = null
     private val getResult = registerForActivityResult(
         ActivityResultContracts.StartActivityForResult()
     ) {
         if (it.resultCode == Activity.RESULT_OK) {
-            Log.d(TAG, "dqdwqdq: ")
-            viewModel.startService(requireActivity(), requireContext(), it.resultCode, it.data!!)
+            viewLifecycleOwner.lifecycleScope.launch {
+                viewModel.updatePreferencesVoice(requireContext(), pitchSeekbar, speedSeekbar)
+                viewModel.startService(
+                    requireActivity(),
+                    requireContext(),
+                    it.resultCode,
+                    it.data!!
+                )
+            }
             Log.d(TAG, "GetResult is called")
         } else {
             Log.d(TAG, "RESULT_OK is false")
         }
-
-        Log.d(TAG, "WWEFEWFFW")
     }
 
     override fun onCreateView(
@@ -66,6 +75,7 @@ class HomeFragment : Fragment(R.layout.fragment_home) {
 
         binding.startButton.setOnClickListener {
             if (viewModel.checkOverlayPermission(requireContext())) {
+                speak(binding)
                 val mProjectionManager =
                     requireActivity().getSystemService(AppCompatActivity.MEDIA_PROJECTION_SERVICE) as MediaProjectionManager
                 getResult.launch(mProjectionManager.createScreenCaptureIntent())
@@ -73,6 +83,19 @@ class HomeFragment : Fragment(R.layout.fragment_home) {
                 AlertDialogFragment().show(parentFragmentManager, ALERT_DIALOG)
             }
         }
+
+
+    }
+
+    private fun speak(binding: FragmentHomeBinding) {
+        var pitch = (binding.seekbarPitch.progress / 50).toFloat()
+        if (pitch < 0.1) pitch = 0.1f
+
+        var speed = (binding.seekbarSpeed.progress / 50).toFloat()
+        if (speed < 0.1) speed = 0.1f
+
+        pitchSeekbar = pitch
+        speedSeekbar = speed
     }
 
     override fun onDestroy() {

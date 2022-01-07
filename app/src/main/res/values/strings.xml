@@ -9,4 +9,6 @@
     <string name="readericon">ReaderIcon</string>
     <string name="camere_image">Camere Image</string>
     <string name="close_image">Close Image</string>
+    <string name="speed">Speed</string>
+    <string name="pitch">Pitch</string>
 </resources>

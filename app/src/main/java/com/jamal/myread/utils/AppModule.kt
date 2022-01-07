@@ -1,5 +1,9 @@
-package com.jamal.myread
+package com.jamal.myread.utils
 
+import android.content.Context
+import androidx.datastore.core.DataStore
+import androidx.datastore.preferences.core.Preferences
+import androidx.datastore.preferences.preferencesDataStore
 import com.jamal.myread.model.ScreenReaderService
 import dagger.Module
 import dagger.Provides

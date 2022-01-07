@@ -13,7 +13,6 @@ import android.hardware.display.VirtualDisplay
 import android.media.ImageReader
 import android.media.projection.MediaProjection
 import android.media.projection.MediaProjectionManager
-import android.net.Uri
 import android.os.*
 import android.speech.tts.TextToSpeech
 import android.util.Log
@@ -22,10 +21,12 @@ import android.widget.Toast
 import androidx.core.content.FileProvider
 import androidx.core.content.getSystemService
 import com.google.mlkit.vision.common.InputImage
+import com.google.mlkit.vision.text.Text
 import com.google.mlkit.vision.text.TextRecognition
 import com.google.mlkit.vision.text.latin.TextRecognizerOptions
-import com.jamal.myread.NotificationUtils
+import com.jamal.myread.utils.NotificationUtils
 import com.jamal.myread.databinding.ScreenReaderItemBinding
+import com.jamal.myread.viewmodel.PreferencesVoice
 import java.io.File
 import java.io.FileOutputStream
 import java.io.IOException
@@ -52,6 +53,8 @@ class ScreenReaderService : Service() {
     private var mOrientationChangeCallback: OrientationChangeCallback? = null
     private var resultCode: Int? = null
     private var data: Intent? = null
+    private var pitch: Float? = null
+    private var speed: Float? = null
     val recognizer = TextRecognition.getClient(TextRecognizerOptions.DEFAULT_OPTIONS)
     lateinit var mTTS: TextToSpeech
 
@@ -165,6 +168,7 @@ class ScreenReaderService : Service() {
         }.start()
     }
 
+    // Crash als je te snel opnieuw screenshot maakt
     private fun returnTextFromImage() {
 
         var image: InputImage? = null
@@ -184,18 +188,14 @@ class ScreenReaderService : Service() {
                 Log.d(TAG, "TASK COMPLETED!!! ${visionText.text}")
                 deleteAllImagesFromExternalStorage()
 
-                mTTS.apply {
-                    setPitch(0.5f)
-                    setSpeechRate(0.5f)
-                    speak(visionText.text, TextToSpeech.QUEUE_FLUSH, null, null)
-                }
+                speak(mTTS, visionText, pitch!!, speed!!)
             }
             .addOnFailureListener { e ->
                 Log.d(TAG, "Task failed! $e")
             }
     }
 
-    private fun speak(mTTS: TextToSpeech, text: String) {
+    private fun speak(mTTS: TextToSpeech, text: Text, pitch: Float, speed: Float) {
 
 //        var pitch = (binding.seekBarPitch.progress / 50).toFloat()
 //        if (pitch < 0.1) pitch = 0.1f
@@ -204,9 +204,9 @@ class ScreenReaderService : Service() {
 //        if (speed < 0.1) speed = 0.1f
 
         mTTS.apply {
-//            setPitch(pitch)
-//            setSpeechRate(speed)
-            speak(text, TextToSpeech.QUEUE_FLUSH, null, null);
+            setPitch(pitch)
+            setSpeechRate(speed)
+            speak(text.text, TextToSpeech.QUEUE_FLUSH, null, null)
         }
     }
 
@@ -239,7 +239,7 @@ class ScreenReaderService : Service() {
                 break
             }
         }
-        
+
         return firstFile
     }
 
@@ -250,6 +250,8 @@ class ScreenReaderService : Service() {
 
             resultCode = intent.getIntExtra(RESULT_CODE, Activity.RESULT_CANCELED)
             data = intent.getParcelableExtra<Intent>(DATA)
+            pitch = intent.getFloatExtra(PREFERENCES_VOICE_PITCH, 1f)
+            speed = intent.getFloatExtra(PREFERENCES_VOICE_SPEED, 1f)
 
         } else if (isStopCommand(intent)) {
             stopProjection()
@@ -420,11 +422,15 @@ class ScreenReaderService : Service() {
         private const val STOP = "STOP"
         private const val SCREENCAP_NAME = "screencap"
         private var IMAGES_PRODUCED = 0
-        fun getStartIntent(context: Context?, resultCode: Int, data: Intent?): Intent {
+        private const val PREFERENCES_VOICE_PITCH = "PREFERENCES_VOICE_PITCH"
+        private const val PREFERENCES_VOICE_SPEED = "PREFERENCES_VOICE_PITCH"
+        fun getStartIntent(context: Context?, resultCode: Int, data: Intent?, preferencesVoice: PreferencesVoice): Intent {
             val intent = Intent(context, ScreenReaderService::class.java)
             intent.putExtra(ACTION, START)
             intent.putExtra(RESULT_CODE, resultCode)
             intent.putExtra(DATA, data)
+            intent.putExtra(PREFERENCES_VOICE_PITCH, preferencesVoice.pitch)
+            intent.putExtra(PREFERENCES_VOICE_SPEED, preferencesVoice.speed)
             return intent
         }
 

@@ -1,4 +1,4 @@
-package com.jamal.myread
+package com.jamal.myread.utils
 
 import android.annotation.TargetApi
 import android.app.Notification
@@ -8,6 +8,7 @@ import android.content.Context
 import android.os.Build
 import androidx.core.app.NotificationCompat
 import androidx.core.util.Pair
+import com.jamal.myread.R
 
 object NotificationUtils {
     const val NOTIFICATION_ID = 1337
