@@ -274,12 +274,20 @@ class ScreenReaderService : Service() {
         }
         mTTS = TextToSpeech(this) { status ->
             if (status == TextToSpeech.SUCCESS) {
-                val result = mTTS?.setLanguage(Locale.ENGLISH)
+                var result = mTTS?.setLanguage(Locale.ENGLISH)
+
+                if (result != 0) {
+                    result = 0;
+                }
 
                 if (result == TextToSpeech.LANG_MISSING_DATA
                     || result == TextToSpeech.LANG_NOT_SUPPORTED) {
                     Toast.makeText(this, "Language not supported!",
                         Toast.LENGTH_SHORT).show()
+
+                    if (result == TextToSpeech.LANG_NOT_SUPPORTED) {
+                        Log.d("MISSING", "onStartCommand: Missing LANG")
+                    }
                 } else {
                     Log.d(TAG, "returnTextFromImage: Hallo")
                 }
