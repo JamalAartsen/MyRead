@@ -14,6 +14,7 @@ import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.Toast
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.content.ContextCompat
@@ -22,10 +23,14 @@ import androidx.fragment.app.viewModels
 import androidx.lifecycle.lifecycleScope
 import com.jamal.myread.R
 import com.jamal.myread.databinding.FragmentHomeBinding
+import com.jamal.myread.model.MessageEvent
 import com.jamal.myread.model.ScreenReaderService
 import com.jamal.myread.viewmodel.HomeViewModel
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.launch
+import org.greenrobot.eventbus.EventBus
+import org.greenrobot.eventbus.Subscribe
+import org.greenrobot.eventbus.ThreadMode
 
 private const val ALERT_DIALOG = "AlertDialog"
 
@@ -79,12 +84,29 @@ class HomeFragment : Fragment(R.layout.fragment_home) {
                 val mProjectionManager =
                     requireActivity().getSystemService(AppCompatActivity.MEDIA_PROJECTION_SERVICE) as MediaProjectionManager
                 getResult.launch(mProjectionManager.createScreenCaptureIntent())
+                binding.apply {
+                    seekbarSpeed.isEnabled = false
+                    seekbarPitch.isEnabled = false
+                }
             } else {
                 AlertDialogFragment().show(parentFragmentManager, ALERT_DIALOG)
             }
         }
 
+    }
 
+    @Subscribe(threadMode = ThreadMode.MAIN)
+    fun onMessageEvent(event: MessageEvent) {
+        Log.d(TAG, "onMessageEvent: ${event.message}")
+        binding.apply {
+            seekbarPitch.isEnabled = true
+            seekbarSpeed.isEnabled = true
+        }
+    }
+
+    @Subscribe
+    fun handleOtherMessages() {
+        Log.d(TAG, "handleOtherMessages: Receive other message")
     }
 
     private fun speak(binding: FragmentHomeBinding) {
@@ -96,6 +118,18 @@ class HomeFragment : Fragment(R.layout.fragment_home) {
 
         pitchSeekbar = pitch
         speedSeekbar = speed
+    }
+
+    override fun onStart() {
+        super.onStart()
+
+        EventBus.getDefault().register(this)
+    }
+
+    override fun onStop() {
+        super.onStop()
+
+        EventBus.getDefault().unregister(this)
     }
 
     override fun onDestroy() {

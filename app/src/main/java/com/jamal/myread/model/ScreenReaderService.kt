@@ -27,6 +27,7 @@ import com.google.mlkit.vision.text.latin.TextRecognizerOptions
 import com.jamal.myread.utils.NotificationUtils
 import com.jamal.myread.databinding.ScreenReaderItemBinding
 import com.jamal.myread.viewmodel.PreferencesVoice
+import org.greenrobot.eventbus.EventBus
 import java.io.File
 import java.io.FileOutputStream
 import java.io.IOException
@@ -78,7 +79,6 @@ class ScreenReaderService : Service() {
                 Log.d("NULL", "onCreate: Media is null")
             }
 
-            Toast.makeText(this, "This is a test!", Toast.LENGTH_SHORT).show()
             startProjection(resultCode!!, data)
             getImageFromExternalStorage()
             Handler(Looper.getMainLooper()).postDelayed({
@@ -210,16 +210,15 @@ class ScreenReaderService : Service() {
     }
 
     private fun speak(mTTS: TextToSpeech, text: Text, pitch: Float, speed: Float) {
+        var pitchTTS = pitch
+        var speedTTS = speed
 
-//        var pitch = (binding.seekBarPitch.progress / 50).toFloat()
-//        if (pitch < 0.1) pitch = 0.1f
-//
-//        var speed = (binding.seekBarSpeed.progress / 50).toFloat()
-//        if (speed < 0.1) speed = 0.1f
+        if (pitch < 0.1) pitchTTS = 0.1f
+        if (speed < 0.1) speedTTS = 0.1f
 
         mTTS.apply {
-            setPitch(pitch)
-            setSpeechRate(speed)
+            setPitch(pitchTTS)
+            setSpeechRate(speedTTS)
             speak(text.text, TextToSpeech.QUEUE_FLUSH, null, null)
         }
     }
@@ -297,6 +296,11 @@ class ScreenReaderService : Service() {
             }
         }
         return START_NOT_STICKY
+    }
+
+    override fun onDestroy() {
+        super.onDestroy()
+        EventBus.getDefault().post(MessageEvent("Mediaprojection stopped"))
     }
 
     fun startProjection(resultCode: Int, data: Intent?) {
