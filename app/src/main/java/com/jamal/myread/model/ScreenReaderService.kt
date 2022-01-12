@@ -72,6 +72,12 @@ class ScreenReaderService : Service() {
         floatView = binding.root
 
         binding.readerBtn.setOnClickListener {
+            if (mMediaProjection != null) {
+                mMediaProjection!!.stop()
+            } else {
+                Log.d("NULL", "onCreate: Media is null")
+            }
+
             Toast.makeText(this, "This is a test!", Toast.LENGTH_SHORT).show()
             startProjection(resultCode!!, data)
             getImageFromExternalStorage()
@@ -172,27 +178,35 @@ class ScreenReaderService : Service() {
     private fun returnTextFromImage() {
 
         var image: InputImage? = null
-        try {
-            image = InputImage.fromFilePath(
-                this, FileProvider.getUriForFile(
-                    this, "com.myread.android.fileprovider",
-                    getImageFromExternalStorage()!!
+        if (getImageFromExternalStorage() != null) {
+            try {
+                image = InputImage.fromFilePath(
+                    this, FileProvider.getUriForFile(
+                        this, "com.myread.android.fileprovider",
+                        getImageFromExternalStorage()!!
+                    )
                 )
-            )
-        } catch (e: IOException) {
-            e.printStackTrace()
+            } catch (e: IOException) {
+                e.printStackTrace()
+            }
+        } else {
+            Log.d("NULL", "returnTextFromImage: Geen URI'S gevonden")
         }
 
-        val result = recognizer.process(image!!)
-            .addOnSuccessListener { visionText ->
-                Log.d(TAG, "TASK COMPLETED!!! ${visionText.text}")
-                deleteAllImagesFromExternalStorage()
+        if (image != null) {
+            val result = recognizer.process(image!!)
+                .addOnSuccessListener { visionText ->
+                    Log.d(TAG, "TASK COMPLETED!!! ${visionText.text}")
+                    deleteAllImagesFromExternalStorage()
 
-                speak(mTTS, visionText, pitch!!, speed!!)
-            }
-            .addOnFailureListener { e ->
-                Log.d(TAG, "Task failed! $e")
-            }
+                    speak(mTTS, visionText, pitch!!, speed!!)
+                }
+                .addOnFailureListener { e ->
+                    Log.d(TAG, "Task failed! $e")
+                }
+        } else {
+            Log.d("NULL", "returnTextFromImage: Image is null")
+        }
     }
 
     private fun speak(mTTS: TextToSpeech, text: Text, pitch: Float, speed: Float) {
