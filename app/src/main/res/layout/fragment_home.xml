@@ -60,7 +60,6 @@
         android:background="@drawable/btn_bg"
         android:fontFamily="@font/ubuntu_medium"
         android:text="@string/start"
-        android:textAllCaps="false"
         android:textSize="16dp"
         app:backgroundTint="@null"
         app:layout_constraintBottom_toBottomOf="parent"

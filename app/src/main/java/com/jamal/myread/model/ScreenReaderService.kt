@@ -18,6 +18,7 @@ import android.speech.tts.TextToSpeech
 import android.util.Log
 import android.view.*
 import android.widget.Toast
+import androidx.annotation.RequiresApi
 import androidx.core.content.FileProvider
 import androidx.core.content.getSystemService
 import com.google.mlkit.vision.common.InputImage
@@ -32,7 +33,9 @@ import java.io.File
 import java.io.FileOutputStream
 import java.io.IOException
 import java.lang.Exception
+import java.lang.StringBuilder
 import java.util.*
+import kotlin.math.log
 
 class ScreenReaderService : Service() {
     private lateinit var floatView: ViewGroup
