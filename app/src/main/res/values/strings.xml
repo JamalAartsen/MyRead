@@ -11,5 +11,5 @@
     <string name="close_image">Close Image</string>
     <string name="speed">Speed</string>
     <string name="pitch">Pitch</string>
-    <string name="click_on_the_start_button_below_to_start_the_app_and_let_your_phone_read_aloud">Click on the \'START\' button below to start the app and let your phone read aloud!</string>
+    <string name="click_on_the_start_button_below_to_start_the_app_and_let_your_phone_read_aloud">Click on the \'START\' button below to activate the read button and let your phone read aloud!</string>
 </resources>

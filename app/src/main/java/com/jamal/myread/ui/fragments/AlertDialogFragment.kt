@@ -16,7 +16,7 @@ import dagger.hilt.android.AndroidEntryPoint
 class AlertDialogFragment: DialogFragment() {
 
     private val TAG = "AlertDialogFragment"
-    val getResult = registerForActivityResult(
+    private val getResult = registerForActivityResult(
         ActivityResultContracts.StartActivityForResult()
     ) {
         if (it.resultCode == Activity.RESULT_OK) {

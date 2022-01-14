@@ -1,6 +1,8 @@
 package com.jamal.myread.ui.fragments
 
 import android.app.Activity
+import android.graphics.Color
+import android.graphics.Typeface
 import android.media.projection.MediaProjectionManager
 import android.os.Bundle
 import android.util.Log
@@ -8,11 +10,16 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.activity.result.contract.ActivityResultContracts
+import androidx.annotation.ColorRes
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.content.ContextCompat
+import androidx.core.content.res.ResourcesCompat
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.lifecycleScope
+import com.getkeepsafe.taptargetview.TapTarget
+import com.getkeepsafe.taptargetview.TapTargetSequence
+import com.getkeepsafe.taptargetview.TapTargetView
 import com.jamal.myread.R
 import com.jamal.myread.databinding.FragmentHomeBinding
 import com.jamal.myread.model.MessageEvent
@@ -73,6 +80,8 @@ class HomeFragment : Fragment(R.layout.fragment_home) {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
+        TapTargetSequences()
+
         binding.startButton.setOnClickListener {
             if (viewModel.checkOverlayPermission(requireContext())) {
                 speak(binding)
@@ -88,6 +97,32 @@ class HomeFragment : Fragment(R.layout.fragment_home) {
             }
         }
 
+    }
+
+    fun TapTargetSequences() {
+        TapTargetSequence(requireActivity())
+            .targets(
+                TapTargetView(binding.pitchTitle, "Pitch Voice", "Here you can change the pitch of the voice.", R.color.dark_purple),
+                TapTargetView(binding.speedTitle, "Speed Voice", "Here you can change the speed of the voice.", R.color.light_purple),
+                TapTargetView(binding.startButton, "Start Button", "Click on the 'START' button to activate the read button!", R.color.dark_purple),
+            ).start()
+    }
+
+    fun TapTargetView(binding: View, title: String, description: String, @ColorRes bgColor: Int): TapTarget? {
+       return TapTarget.forView(
+            binding,
+            title,
+            description
+        )
+            .titleTextSize(24)
+            .descriptionTextSize(18)
+            .outerCircleColor(bgColor)
+            .textTypeface(ResourcesCompat.getFont(requireContext(), R.font.ubuntu_regular))
+            .titleTypeface(ResourcesCompat.getFont(requireContext(), R.font.ubuntu_bold))
+            .cancelable(false)
+            .transparentTarget(true)
+            .targetRadius(40)
+            .outerCircleAlpha(0.96f)
     }
 
     @Subscribe(threadMode = ThreadMode.MAIN)

@@ -18,13 +18,17 @@ import android.speech.tts.TextToSpeech
 import android.util.Log
 import android.view.*
 import android.widget.Toast
-import androidx.annotation.RequiresApi
+import androidx.annotation.ColorRes
 import androidx.core.content.FileProvider
 import androidx.core.content.getSystemService
+import androidx.core.content.res.ResourcesCompat
+import com.getkeepsafe.taptargetview.TapTarget
+import com.getkeepsafe.taptargetview.TapTargetSequence
 import com.google.mlkit.vision.common.InputImage
 import com.google.mlkit.vision.text.Text
 import com.google.mlkit.vision.text.TextRecognition
 import com.google.mlkit.vision.text.latin.TextRecognizerOptions
+import com.jamal.myread.R
 import com.jamal.myread.utils.NotificationUtils
 import com.jamal.myread.databinding.ScreenReaderItemBinding
 import com.jamal.myread.viewmodel.PreferencesVoice
@@ -33,9 +37,7 @@ import java.io.File
 import java.io.FileOutputStream
 import java.io.IOException
 import java.lang.Exception
-import java.lang.StringBuilder
 import java.util.*
-import kotlin.math.log
 
 class ScreenReaderService : Service() {
     private lateinit var floatView: ViewGroup
@@ -283,9 +285,12 @@ class ScreenReaderService : Service() {
                 }
 
                 if (result == TextToSpeech.LANG_MISSING_DATA
-                    || result == TextToSpeech.LANG_NOT_SUPPORTED) {
-                    Toast.makeText(this, "Language not supported!",
-                        Toast.LENGTH_SHORT).show()
+                    || result == TextToSpeech.LANG_NOT_SUPPORTED
+                ) {
+                    Toast.makeText(
+                        this, "Language not supported!",
+                        Toast.LENGTH_SHORT
+                    ).show()
 
                     if (result == TextToSpeech.LANG_NOT_SUPPORTED) {
                         Log.d("MISSING", "onStartCommand: Missing LANG")
@@ -294,8 +299,10 @@ class ScreenReaderService : Service() {
                     Log.d(TAG, "returnTextFromImage: Hallo")
                 }
             } else {
-                Toast.makeText(this, "Initialization failed!",
-                    Toast.LENGTH_SHORT).show()
+                Toast.makeText(
+                    this, "Initialization failed!",
+                    Toast.LENGTH_SHORT
+                ).show()
             }
         }
         return START_NOT_STICKY
@@ -453,7 +460,12 @@ class ScreenReaderService : Service() {
         private var IMAGES_PRODUCED = 0
         private const val PREFERENCES_VOICE_PITCH = "PREFERENCES_VOICE_PITCH"
         private const val PREFERENCES_VOICE_SPEED = "PREFERENCES_VOICE_PITCH"
-        fun getStartIntent(context: Context?, resultCode: Int, data: Intent?, preferencesVoice: PreferencesVoice): Intent {
+        fun getStartIntent(
+            context: Context?,
+            resultCode: Int,
+            data: Intent?,
+            preferencesVoice: PreferencesVoice
+        ): Intent {
             val intent = Intent(context, ScreenReaderService::class.java)
             intent.putExtra(ACTION, START)
             intent.putExtra(RESULT_CODE, resultCode)
