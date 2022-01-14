@@ -1,20 +1,12 @@
 package com.jamal.myread.ui.fragments
 
 import android.app.Activity
-import android.app.AlertDialog
-import android.content.Intent
 import android.media.projection.MediaProjectionManager
-import android.net.Uri
-import android.os.Build
 import android.os.Bundle
-import android.os.Handler
-import android.os.Looper
-import android.provider.Settings
 import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.Toast
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.content.ContextCompat
@@ -24,7 +16,6 @@ import androidx.lifecycle.lifecycleScope
 import com.jamal.myread.R
 import com.jamal.myread.databinding.FragmentHomeBinding
 import com.jamal.myread.model.MessageEvent
-import com.jamal.myread.model.ScreenReaderService
 import com.jamal.myread.viewmodel.HomeViewModel
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.launch
@@ -59,6 +50,10 @@ class HomeFragment : Fragment(R.layout.fragment_home) {
             Log.d(TAG, "GetResult is called")
         } else {
             Log.d(TAG, "RESULT_OK is false")
+            binding.apply {
+                seekbarPitch.isEnabled = true
+                seekbarSpeed.isEnabled = true
+            }
         }
     }
 

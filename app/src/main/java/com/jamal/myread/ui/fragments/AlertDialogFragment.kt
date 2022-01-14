@@ -10,14 +10,11 @@ import android.provider.Settings
 import android.util.Log
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.fragment.app.DialogFragment
-import androidx.fragment.app.viewModels
-import com.jamal.myread.viewmodel.HomeViewModel
 import dagger.hilt.android.AndroidEntryPoint
 
 @AndroidEntryPoint
-class AlertDialogFragment : DialogFragment() {
+class AlertDialogFragment: DialogFragment() {
 
-    private val viewModel by viewModels<HomeViewModel>()
     private val TAG = "AlertDialogFragment"
     val getResult = registerForActivityResult(
         ActivityResultContracts.StartActivityForResult()

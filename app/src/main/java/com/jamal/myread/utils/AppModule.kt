@@ -17,5 +17,5 @@ object AppModule {
 
     @Provides
     @Singleton
-    fun provideService() : ScreenReaderService = ScreenReaderService()
+    fun provideService(): ScreenReaderService = ScreenReaderService()
 }

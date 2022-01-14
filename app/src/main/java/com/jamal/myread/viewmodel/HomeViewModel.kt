@@ -13,10 +13,7 @@ import com.jamal.myread.dataStore
 import com.jamal.myread.model.HomeRepository
 import dagger.hilt.android.lifecycle.HiltViewModel
 import dagger.hilt.android.qualifiers.ApplicationContext
-import kotlinx.coroutines.flow.Flow
-import kotlinx.coroutines.flow.catch
-import kotlinx.coroutines.flow.collect
-import kotlinx.coroutines.flow.map
+import kotlinx.coroutines.flow.*
 import java.io.IOException
 import javax.inject.Inject
 
@@ -28,7 +25,7 @@ class HomeViewModel @Inject constructor(
     @ApplicationContext context: Context
 ) : ViewModel() {
 
-    val preferencesFlow: Flow<PreferencesVoice> = context.dataStore.data
+    private val preferencesFlow: Flow<PreferencesVoice> = context.dataStore.data
         .catch { exception ->
             if (exception is IOException) {
                 emit(emptyPreferences())

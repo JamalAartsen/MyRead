@@ -11,9 +11,9 @@ import androidx.core.util.Pair
 import com.jamal.myread.R
 
 object NotificationUtils {
-    const val NOTIFICATION_ID = 1337
-    private const val NOTIFICATION_CHANNEL_ID = "com.mtsahakis.mediaprojectiondemo.app"
-    private const val NOTIFICATION_CHANNEL_NAME = "com.mtsahakis.mediaprojectiondemo.app"
+    private const val NOTIFICATION_ID = 1337
+    private const val NOTIFICATION_CHANNEL_ID = "com.jamal.myread.app"
+    private const val NOTIFICATION_CHANNEL_NAME = "com.jamal.myread.app"
 
     fun getNotification(context: Context): Pair<Int, Notification>? {
         createNotificationChannel(context)
@@ -41,13 +41,20 @@ object NotificationUtils {
 
     private fun createNotification(context: Context): Notification {
         val builder = NotificationCompat.Builder(context, NOTIFICATION_CHANNEL_ID)
-        builder.setSmallIcon(R.drawable.ic_baseline_camera_alt_24)
-        builder.setContentTitle(context.getString(R.string.app_name))
-        builder.setContentText("We are recording")
-        builder.setOngoing(true)
-        builder.setCategory(Notification.CATEGORY_SERVICE)
-        builder.priority = Notification.PRIORITY_LOW
-        builder.setShowWhen(true)
+        builder.apply {
+            setSmallIcon(R.drawable.ic_read_person_white)
+            setContentTitle(context.getString(R.string.app_name))
+            setOngoing(true)
+            setCategory(Notification.CATEGORY_SERVICE)
+            priority = setPriority()
+            setShowWhen(true)
+        }
         return builder.build()
+    }
+
+    fun setPriority(): Int {
+        return if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
+            NotificationManager.IMPORTANCE_LOW
+        } else Notification.PRIORITY_LOW
     }
 }
