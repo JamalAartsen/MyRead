@@ -1,6 +1,7 @@
 package com.jamal.myread.ui.fragments
 
 import android.app.Activity
+import android.content.Context
 import android.graphics.Color
 import android.graphics.Typeface
 import android.media.projection.MediaProjectionManager
@@ -14,6 +15,12 @@ import androidx.annotation.ColorRes
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.content.ContextCompat
 import androidx.core.content.res.ResourcesCompat
+import androidx.datastore.core.DataStore
+import androidx.datastore.preferences.core.Preferences
+import androidx.datastore.preferences.core.booleanPreferencesKey
+import androidx.datastore.preferences.core.edit
+import androidx.datastore.preferences.core.intPreferencesKey
+import androidx.datastore.preferences.preferencesDataStore
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.lifecycleScope
@@ -25,6 +32,9 @@ import com.jamal.myread.databinding.FragmentHomeBinding
 import com.jamal.myread.model.MessageEvent
 import com.jamal.myread.viewmodel.HomeViewModel
 import dagger.hilt.android.AndroidEntryPoint
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.first
+import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.launch
 import org.greenrobot.eventbus.EventBus
 import org.greenrobot.eventbus.Subscribe
@@ -35,6 +45,7 @@ private const val ALERT_DIALOG = "AlertDialog"
 @AndroidEntryPoint
 class HomeFragment : Fragment(R.layout.fragment_home) {
 
+    val Context.dataStoreHome: DataStore<Preferences> by preferencesDataStore(name = "firstTime")
     private var _binding: FragmentHomeBinding? = null
     private val binding get() = _binding!!
     private val TAG = "HomeFragment"
@@ -80,7 +91,11 @@ class HomeFragment : Fragment(R.layout.fragment_home) {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        TapTargetSequences()
+        viewLifecycleOwner.lifecycleScope.launch {
+            if (readDataStore("first_time") == true) {
+                TapTargetSequences()
+            }
+        }
 
         binding.startButton.setOnClickListener {
             if (viewModel.checkOverlayPermission(requireContext())) {
@@ -99,17 +114,65 @@ class HomeFragment : Fragment(R.layout.fragment_home) {
 
     }
 
+    private suspend fun writeDataStore(key: String, value: Boolean) {
+        val dataStoreKey = booleanPreferencesKey(key)
+        requireContext().dataStoreHome.edit { firstTime ->
+            firstTime[dataStoreKey] = value
+        }
+    }
+
+    private suspend fun readDataStore(key: String): Boolean? {
+        val dataStoreKey = booleanPreferencesKey(key)
+        val preferences = requireContext().dataStoreHome.data.first()
+        return preferences[dataStoreKey]
+    }
+
     fun TapTargetSequences() {
         TapTargetSequence(requireActivity())
             .targets(
-                TapTargetView(binding.pitchTitle, "Pitch Voice", "Here you can change the pitch of the voice.", R.color.dark_purple),
-                TapTargetView(binding.speedTitle, "Speed Voice", "Here you can change the speed of the voice.", R.color.light_purple),
-                TapTargetView(binding.startButton, "Start Button", "Click on the 'START' button to activate the read button!", R.color.dark_purple),
-            ).start()
+                TapTargetView(
+                    binding.pitchTitle,
+                    "Pitch Voice",
+                    "Here you can change the pitch of the voice.",
+                    R.color.dark_purple
+                ),
+                TapTargetView(
+                    binding.speedTitle,
+                    "Speed Voice",
+                    "Here you can change the speed of the voice.",
+                    R.color.light_purple
+                ),
+                TapTargetView(
+                    binding.startButton,
+                    "Start Button",
+                    "Click on the 'START' button to activate the read button!",
+                    R.color.dark_purple
+                ),
+            ).listener(object : TapTargetSequence.Listener {
+                override fun onSequenceFinish() {
+                    viewLifecycleOwner.lifecycleScope.launch {
+                        writeDataStore("first_time", false)
+                    }
+                }
+
+                override fun onSequenceStep(lastTarget: TapTarget?, targetClicked: Boolean) {
+
+                }
+
+                override fun onSequenceCanceled(lastTarget: TapTarget?) {
+
+                }
+
+            }).start()
     }
 
-    fun TapTargetView(binding: View, title: String, description: String, @ColorRes bgColor: Int): TapTarget? {
-       return TapTarget.forView(
+    fun TapTargetView(
+        binding: View,
+        title: String,
+        description: String,
+        @ColorRes bgColor: Int
+    ): TapTarget? {
+        return TapTarget.forView(
             binding,
             title,
             description
@@ -125,7 +188,7 @@ class HomeFragment : Fragment(R.layout.fragment_home) {
             .outerCircleAlpha(0.96f)
     }
 
-    @Subscribe(threadMode = ThreadMode.MAIN)
+    @Subscribe(sticky = true, threadMode = ThreadMode.MAIN)
     fun onMessageEvent(event: MessageEvent) {
         Log.d(TAG, "onMessageEvent: ${event.message}")
         binding.apply {

@@ -310,7 +310,7 @@ class ScreenReaderService : Service() {
 
     override fun onDestroy() {
         super.onDestroy()
-        EventBus.getDefault().post(MessageEvent("Mediaprojection stopped"))
+        EventBus.getDefault().postSticky(MessageEvent("Mediaprojection stopped"))
     }
 
     fun startProjection(resultCode: Int, data: Intent?) {
