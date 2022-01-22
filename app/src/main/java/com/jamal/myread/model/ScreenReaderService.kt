@@ -18,20 +18,14 @@ import android.speech.tts.TextToSpeech
 import android.util.Log
 import android.view.*
 import android.widget.Toast
-import androidx.annotation.ColorRes
 import androidx.core.content.FileProvider
 import androidx.core.content.getSystemService
-import androidx.core.content.res.ResourcesCompat
-import com.getkeepsafe.taptargetview.TapTarget
-import com.getkeepsafe.taptargetview.TapTargetSequence
 import com.google.mlkit.vision.common.InputImage
 import com.google.mlkit.vision.text.Text
 import com.google.mlkit.vision.text.TextRecognition
 import com.google.mlkit.vision.text.latin.TextRecognizerOptions
-import com.jamal.myread.R
 import com.jamal.myread.utils.NotificationUtils
 import com.jamal.myread.databinding.ScreenReaderItemBinding
-import com.jamal.myread.viewmodel.PreferencesVoice
 import org.greenrobot.eventbus.EventBus
 import java.io.File
 import java.io.FileOutputStream
@@ -45,7 +39,6 @@ class ScreenReaderService : Service() {
     private var LAYOUT_TYPE: Int? = null
     private lateinit var windowManager: WindowManager
     private val TAG = "ScreenReaderService"
-
     private var mMediaProjection: MediaProjection? = null
     private var mStoreDir: String? = null
     private var mImageReader: ImageReader? = null
@@ -61,7 +54,7 @@ class ScreenReaderService : Service() {
     private var data: Intent? = null
     private var pitch: Float? = null
     private var speed: Float? = null
-    val recognizer = TextRecognition.getClient(TextRecognizerOptions.DEFAULT_OPTIONS)
+    private val recognizer = TextRecognition.getClient(TextRecognizerOptions.DEFAULT_OPTIONS)
     lateinit var mTTS: TextToSpeech
 
     override fun onBind(intent: Intent?): IBinder? {
@@ -204,6 +197,9 @@ class ScreenReaderService : Service() {
                     Log.d(TAG, "TASK COMPLETED!!! ${visionText.text}")
                     deleteAllImagesFromExternalStorage()
 
+                    Log.d(TAG, "returnTextFromImage: PITCH: $pitch")
+                    Log.d(TAG, "returnTextFromImage: SPEED $speed")
+
                     speak(mTTS, visionText, pitch!!, speed!!)
                 }
                 .addOnFailureListener { e ->
@@ -245,7 +241,7 @@ class ScreenReaderService : Service() {
         }
     }
 
-    fun getImageFromExternalStorage(): File? {
+    private fun getImageFromExternalStorage(): File? {
         val file = File(mStoreDir!!)
         val fileArray = file.listFiles()
         var firstFile: File? = null
@@ -271,6 +267,9 @@ class ScreenReaderService : Service() {
             pitch = intent.getFloatExtra(PREFERENCES_VOICE_PITCH, 1f)
             speed = intent.getFloatExtra(PREFERENCES_VOICE_SPEED, 1f)
 
+            Log.d(TAG, "PITCH: $pitch")
+            Log.d(TAG, "SPEED: $speed")
+
         } else if (isStopCommand(intent)) {
             stopProjection()
         } else {
@@ -278,7 +277,7 @@ class ScreenReaderService : Service() {
         }
         mTTS = TextToSpeech(this) { status ->
             if (status == TextToSpeech.SUCCESS) {
-                var result = mTTS?.setLanguage(Locale.ENGLISH)
+                var result = mTTS.setLanguage(Locale.ENGLISH)
 
                 if (result != 0) {
                     result = 0;
@@ -313,7 +312,7 @@ class ScreenReaderService : Service() {
         EventBus.getDefault().postSticky(MessageEvent("Mediaprojection stopped"))
     }
 
-    fun startProjection(resultCode: Int, data: Intent?) {
+    private fun startProjection(resultCode: Int, data: Intent?) {
         val mpManager = getSystemService(MEDIA_PROJECTION_SERVICE) as MediaProjectionManager
 
         mMediaProjection = mpManager.getMediaProjection(resultCode, data!!)
@@ -341,7 +340,7 @@ class ScreenReaderService : Service() {
     }
 
 
-    fun stopProjection() {
+    private fun stopProjection() {
         if (mHandler != null) {
             mHandler!!.post {
                 if (mMediaProjection != null) {
@@ -459,25 +458,22 @@ class ScreenReaderService : Service() {
         private const val SCREENCAP_NAME = "screencap"
         private var IMAGES_PRODUCED = 0
         private const val PREFERENCES_VOICE_PITCH = "PREFERENCES_VOICE_PITCH"
-        private const val PREFERENCES_VOICE_SPEED = "PREFERENCES_VOICE_PITCH"
+        private const val PREFERENCES_VOICE_SPEED = "PREFERENCES_VOICE_SPEED"
+
         fun getStartIntent(
             context: Context?,
             resultCode: Int,
             data: Intent?,
-            preferencesVoice: PreferencesVoice
+            pitch: Float,
+            speed: Float
         ): Intent {
             val intent = Intent(context, ScreenReaderService::class.java)
             intent.putExtra(ACTION, START)
             intent.putExtra(RESULT_CODE, resultCode)
             intent.putExtra(DATA, data)
-            intent.putExtra(PREFERENCES_VOICE_PITCH, preferencesVoice.pitch)
-            intent.putExtra(PREFERENCES_VOICE_SPEED, preferencesVoice.speed)
-            return intent
-        }
+            intent.putExtra(PREFERENCES_VOICE_PITCH, pitch)
+            intent.putExtra(PREFERENCES_VOICE_SPEED, speed)
 
-        fun getStopIntent(context: Context?): Intent {
-            val intent = Intent(context, ScreenReaderService::class.java)
-            intent.putExtra(ACTION, STOP)
             return intent
         }
 
@@ -491,6 +487,6 @@ class ScreenReaderService : Service() {
         }
 
         private val virtualDisplayFlags: Int
-            private get() = DisplayManager.VIRTUAL_DISPLAY_FLAG_OWN_CONTENT_ONLY or DisplayManager.VIRTUAL_DISPLAY_FLAG_PUBLIC
+            get() = DisplayManager.VIRTUAL_DISPLAY_FLAG_OWN_CONTENT_ONLY or DisplayManager.VIRTUAL_DISPLAY_FLAG_PUBLIC
     }
 }

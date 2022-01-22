@@ -5,9 +5,7 @@ import android.content.Context
 import android.content.Intent
 import android.os.Build
 import android.provider.Settings
-import androidx.datastore.preferences.core.edit
-import androidx.datastore.preferences.core.emptyPreferences
-import androidx.datastore.preferences.core.floatPreferencesKey
+import androidx.datastore.preferences.core.*
 import androidx.lifecycle.ViewModel
 import com.jamal.myread.dataStore
 import com.jamal.myread.model.HomeRepository
@@ -25,6 +23,8 @@ class HomeViewModel @Inject constructor(
     @ApplicationContext context: Context
 ) : ViewModel() {
 
+    private val TAG = "HomeViewModel"
+
     private val preferencesFlow: Flow<PreferencesVoice> = context.dataStore.data
         .catch { exception ->
             if (exception is IOException) {
@@ -39,20 +39,58 @@ class HomeViewModel @Inject constructor(
             PreferencesVoice(pitch, speed)
         }
 
-
     suspend fun startService(activity: Activity, context: Context, resultCode: Int, data: Intent) {
-        preferencesFlow.collect { pitchFlow ->
-            repository.startService(activity, context, resultCode, data, PreferencesVoice(pitchFlow.pitch, pitchFlow.speed))
+        preferencesFlow.collect { flow ->
+            repository.startService(activity, context, resultCode, data, flow.pitch, flow.speed)
         }
     }
 
+    /**
+     * Edits values inside datatsore of de specific given key.
+     *
+     * @param context
+     * @param pitch
+     * @param speed
+     *
+     * @author Jamal Aartsen
+     */
     suspend fun updatePreferencesVoice(context: Context, pitch: Float?, speed: Float?) {
         context.dataStore.edit { preferences ->
-            preferences[PreferencesKeys.SPEED] = speed ?: 1f
-            preferences[PreferencesKeys.PITCH] = pitch ?: 1f
+            checkIfValueIsBelowCertainNumber(pitch, preferences, PreferencesKeys.SPEED)
+            checkIfValueIsBelowCertainNumber(speed, preferences, PreferencesKeys.PITCH)
         }
     }
 
+    /**
+     * Check if the given value is below 0.1f and set given value to datastore.
+     *
+     * @param value given float value (pitch or speed)
+     * @param preferences
+     * @param preferencesKeys
+     *
+     * @author Jamal Aartsen
+     */
+    private fun checkIfValueIsBelowCertainNumber(
+        value: Float?,
+        preferences: MutablePreferences,
+        preferencesKeys: Preferences.Key<Float>
+    ) {
+        if (value != null) {
+            if (value < 0.1f) preferences[preferencesKeys] = 0.1f
+            else preferences[preferencesKeys] = value
+        } else {
+            preferences[preferencesKeys] = 1f
+        }
+    }
+
+    /**
+     *  Checks if phone SDK is over version M (23), so that user can give permission to draw
+     *  on top of other apps.
+     *
+     *  @param context
+     *
+     *  @author Jamal Aartsen
+     */
     fun checkOverlayPermission(context: Context): Boolean {
         return if (Build.VERSION.SDK_INT > Build.VERSION_CODES.M) {
             Settings.canDrawOverlays(context)

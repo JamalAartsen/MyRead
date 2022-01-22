@@ -9,13 +9,14 @@ import javax.inject.Singleton
 
 @Singleton
 class HomeRepository @Inject constructor() {
-    fun startService(activity: Activity, context: Context, resultCode: Int, data: Intent, preferencesVoice: PreferencesVoice) {
+    fun startService(activity: Activity, context: Context, resultCode: Int, data: Intent, pitch: Float, speed: Float) {
         activity.startService(
             ScreenReaderService.getStartIntent(
                 context,
                 resultCode,
                 data,
-                preferencesVoice
+                pitch,
+                speed
             )
         )
     }
