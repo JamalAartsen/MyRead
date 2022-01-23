@@ -27,7 +27,7 @@ import org.greenrobot.eventbus.ThreadMode
 private const val ALERT_DIALOG = "AlertDialog"
 
 @AndroidEntryPoint
-class HomeFragment : Fragment(R.layout.fragment_home) {
+class HomeFragment : Fragment(R.layout.fragment_home), SeekBar.OnSeekBarChangeListener {
 
     private var _binding: FragmentHomeBinding? = null
     private val binding get() = _binding!!
@@ -72,7 +72,7 @@ class HomeFragment : Fragment(R.layout.fragment_home) {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        speak(binding)
+        setSettingsVoice(binding)
         binding.startButton.setOnClickListener {
             if (viewModel.checkOverlayPermission(requireContext())) {
                 val mProjectionManager =
@@ -102,52 +102,50 @@ class HomeFragment : Fragment(R.layout.fragment_home) {
         Log.d(TAG, "handleOtherMessages: Receive other message")
     }
 
-    private fun speak(binding: FragmentHomeBinding) {
-        binding.seekbarPitch.setOnSeekBarChangeListener(object : SeekBar.OnSeekBarChangeListener {
-            override fun onProgressChanged(seekBar: SeekBar?, progress: Int, fromUser: Boolean) {
-                pitchSeekbar = (progress / 50.0f )
-            }
-
-            override fun onStartTrackingTouch(seekBar: SeekBar?) {
-
-            }
-
-            override fun onStopTrackingTouch(seekBar: SeekBar?) {
-
-            }
-
-        })
-
-        binding.seekbarSpeed.setOnSeekBarChangeListener(object : SeekBar.OnSeekBarChangeListener {
-            override fun onProgressChanged(seekBar: SeekBar?, progress: Int, fromUser: Boolean) {
-                speedSeekbar = (progress / 50.0f )
-            }
-
-            override fun onStartTrackingTouch(seekBar: SeekBar?) {
-
-            }
-
-            override fun onStopTrackingTouch(seekBar: SeekBar?) {
-
-            }
-
-        })
+    /**
+     * Set the voice settings (Pitch and Speed)
+     *
+     * @param binding
+     *
+     * @author Jamal Aartsen
+     */
+    private fun setSettingsVoice(binding: FragmentHomeBinding) {
+        binding.seekbarSpeed.setOnSeekBarChangeListener(this)
+        binding.seekbarPitch.setOnSeekBarChangeListener(this)
     }
 
     override fun onStart() {
         super.onStart()
-
         EventBus.getDefault().register(this)
     }
 
     override fun onStop() {
         super.onStop()
-
         EventBus.getDefault().unregister(this)
     }
 
     override fun onDestroy() {
         super.onDestroy()
         _binding = null
+    }
+
+    override fun onProgressChanged(seekBar: SeekBar?, progress: Int, fromUser: Boolean) {
+        seekBar.let {
+            if (binding.seekbarSpeed === it) {
+                speedSeekbar = (progress / 50.0f)
+            }
+
+            if (binding.seekbarPitch === it) {
+                pitchSeekbar = (progress / 50.0f)
+            }
+        }
+    }
+
+    override fun onStartTrackingTouch(seekBar: SeekBar?) {
+
+    }
+
+    override fun onStopTrackingTouch(seekBar: SeekBar?) {
+
     }
 }

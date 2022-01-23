@@ -56,8 +56,8 @@ class HomeViewModel @Inject constructor(
      */
     suspend fun updatePreferencesVoice(context: Context, pitch: Float?, speed: Float?) {
         context.dataStore.edit { preferences ->
-            checkIfValueIsBelowCertainNumber(pitch, preferences, PreferencesKeys.SPEED)
-            checkIfValueIsBelowCertainNumber(speed, preferences, PreferencesKeys.PITCH)
+            checkIfValueIsBelowCertainNumber(pitch, preferences, PreferencesKeys.PITCH)
+            checkIfValueIsBelowCertainNumber(speed, preferences, PreferencesKeys.SPEED)
         }
     }
 
