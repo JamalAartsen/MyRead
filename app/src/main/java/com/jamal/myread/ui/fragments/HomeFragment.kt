@@ -1,5 +1,6 @@
 package com.jamal.myread.ui.fragments
 
+import android.animation.ObjectAnimator
 import android.app.Activity
 import android.content.Context
 import android.media.projection.MediaProjectionManager
@@ -83,9 +84,14 @@ class HomeFragment : Fragment(R.layout.fragment_home), SeekBar.OnSeekBarChangeLi
 
         setSettingsVoice(binding)
 
+
+
         viewLifecycleOwner.lifecycleScope.launch {
-            binding.seekbarSpeed.progress = readVoiceSettings(PreferencesKeys.SPEED).times(50).toInt()
-            binding.seekbarPitch.progress = readVoiceSettings(PreferencesKeys.PITCH).times(50).toInt()
+            voiceSettingsSeekBarProgressAnimation(binding.seekbarSpeed, readVoiceSettings(PreferencesKeys.SPEED).times(50).toInt())
+            voiceSettingsSeekBarProgressAnimation(binding.seekbarPitch, readVoiceSettings(PreferencesKeys.PITCH).times(50).toInt())
+
+//            binding.seekbarSpeed.progress = readVoiceSettings(PreferencesKeys.SPEED).times(50).toInt()
+//            binding.seekbarPitch.progress = readVoiceSettings(PreferencesKeys.PITCH).times(50).toInt()
         }
 
         binding.startButton.setOnClickListener {
@@ -100,6 +106,13 @@ class HomeFragment : Fragment(R.layout.fragment_home), SeekBar.OnSeekBarChangeLi
             } else {
                 AlertDialogFragment().show(parentFragmentManager, ALERT_DIALOG)
             }
+        }
+    }
+
+    private fun voiceSettingsSeekBarProgressAnimation(seekBar: SeekBar, value: Int) {
+        ObjectAnimator.ofInt(seekBar, "progress", 50, value).apply {
+            duration = 250
+            start()
         }
     }
 
