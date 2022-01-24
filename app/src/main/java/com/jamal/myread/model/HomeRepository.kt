@@ -3,7 +3,6 @@ package com.jamal.myread.model
 import android.app.Activity
 import android.content.Context
 import android.content.Intent
-import com.jamal.myread.viewmodel.PreferencesVoice
 import javax.inject.Inject
 import javax.inject.Singleton
 

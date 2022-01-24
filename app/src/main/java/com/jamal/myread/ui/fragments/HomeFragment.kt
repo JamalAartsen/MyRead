@@ -21,7 +21,6 @@ import androidx.datastore.preferences.preferencesDataStore
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.lifecycleScope
-import com.google.android.material.snackbar.Snackbar
 import com.jamal.myread.R
 import com.jamal.myread.databinding.FragmentHomeBinding
 import com.jamal.myread.model.MessageEvent
@@ -70,7 +69,7 @@ class HomeFragment : Fragment(R.layout.fragment_home), SeekBar.OnSeekBarChangeLi
         inflater: LayoutInflater,
         container: ViewGroup?,
         savedInstanceState: Bundle?
-    ): View? {
+    ): View {
         _binding = FragmentHomeBinding.inflate(inflater, container, false)
         requireActivity().window.navigationBarColor = ContextCompat.getColor(
             requireContext(),
@@ -84,14 +83,9 @@ class HomeFragment : Fragment(R.layout.fragment_home), SeekBar.OnSeekBarChangeLi
 
         setSettingsVoice(binding)
 
-
-
         viewLifecycleOwner.lifecycleScope.launch {
             voiceSettingsSeekBarProgressAnimation(binding.seekbarSpeed, readVoiceSettings(PreferencesKeys.SPEED).times(50).toInt())
             voiceSettingsSeekBarProgressAnimation(binding.seekbarPitch, readVoiceSettings(PreferencesKeys.PITCH).times(50).toInt())
-
-//            binding.seekbarSpeed.progress = readVoiceSettings(PreferencesKeys.SPEED).times(50).toInt()
-//            binding.seekbarPitch.progress = readVoiceSettings(PreferencesKeys.PITCH).times(50).toInt()
         }
 
         binding.startButton.setOnClickListener {
@@ -109,6 +103,15 @@ class HomeFragment : Fragment(R.layout.fragment_home), SeekBar.OnSeekBarChangeLi
         }
     }
 
+    /**
+     * Gives the seekbar progress animation. It goes from 50 to given value in 250 msec, it gives a
+     * smooth  effect.
+     *
+     * @param seekBar The seekbar where you want to add this animation
+     * @param value End station of the animation
+     *
+     * @author Jamal Aartsen
+     */
     private fun voiceSettingsSeekBarProgressAnimation(seekBar: SeekBar, value: Int) {
         ObjectAnimator.ofInt(seekBar, "progress", 50, value).apply {
             duration = 250
@@ -132,6 +135,13 @@ class HomeFragment : Fragment(R.layout.fragment_home), SeekBar.OnSeekBarChangeLi
         val SPEED = floatPreferencesKey("speed")
     }
 
+    /**
+     * Recieves messages from EventBus to enable the seekbars.
+     *
+     * @param event MessageEvent with the message
+     *
+     * @author Jamal Aartsen
+     */
     @Subscribe(sticky = true, threadMode = ThreadMode.MAIN)
     fun onMessageEvent(event: MessageEvent) {
         Log.d(TAG, "onMessageEvent: ${event.message}")
@@ -141,6 +151,12 @@ class HomeFragment : Fragment(R.layout.fragment_home), SeekBar.OnSeekBarChangeLi
         }
     }
 
+    /**
+     * Handles messages that come from the EventBus that doesn't belong to the onMessageEvent
+     * method.
+     *
+     * @author Jamal Aartsen
+     */
     @Subscribe
     fun handleOtherMessages() {
         Log.d(TAG, "handleOtherMessages: Receive other message")
