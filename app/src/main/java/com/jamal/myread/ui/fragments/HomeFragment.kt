@@ -2,26 +2,25 @@ package com.jamal.myread.ui.fragments
 
 import android.animation.ObjectAnimator
 import android.app.Activity
-import android.content.Context
 import android.media.projection.MediaProjectionManager
 import android.os.Bundle
 import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.view.animation.AnimationUtils
 import android.widget.SeekBar
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.content.ContextCompat
-import androidx.datastore.core.DataStore
 import androidx.datastore.preferences.core.Preferences
 import androidx.datastore.preferences.core.edit
 import androidx.datastore.preferences.core.floatPreferencesKey
-import androidx.datastore.preferences.preferencesDataStore
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.lifecycleScope
 import com.jamal.myread.R
+import com.jamal.myread.dataStore
 import com.jamal.myread.databinding.FragmentHomeBinding
 import com.jamal.myread.model.MessageEvent
 import com.jamal.myread.viewmodel.HomeViewModel
@@ -43,7 +42,6 @@ class HomeFragment : Fragment(R.layout.fragment_home), SeekBar.OnSeekBarChangeLi
     private val viewModel by viewModels<HomeViewModel>()
     private var pitchSeekbar: Float? = null
     private var speedSeekbar: Float? = null
-    private val Context.dataStore: DataStore<Preferences> by preferencesDataStore(name = "voice_Settings")
     private val getResult = registerForActivityResult(
         ActivityResultContracts.StartActivityForResult()
     ) {
@@ -61,6 +59,7 @@ class HomeFragment : Fragment(R.layout.fragment_home), SeekBar.OnSeekBarChangeLi
             binding.apply {
                 seekbarPitch.isEnabled = true
                 seekbarSpeed.isEnabled = true
+                startButton.isEnabled = true
             }
         }
     }
@@ -88,7 +87,11 @@ class HomeFragment : Fragment(R.layout.fragment_home), SeekBar.OnSeekBarChangeLi
             voiceSettingsSeekBarProgressAnimation(binding.seekbarPitch, readVoiceSettings(PreferencesKeys.PITCH).times(50).toInt())
         }
 
+        val animation = AnimationUtils.loadAnimation(requireContext(), R.anim.bounce)
+
+
         binding.startButton.setOnClickListener {
+            binding.startButton.startAnimation(animation)
             if (viewModel.checkOverlayPermission(requireContext())) {
                 val mProjectionManager =
                     requireActivity().getSystemService(AppCompatActivity.MEDIA_PROJECTION_SERVICE) as MediaProjectionManager
@@ -96,6 +99,7 @@ class HomeFragment : Fragment(R.layout.fragment_home), SeekBar.OnSeekBarChangeLi
                 binding.apply {
                     seekbarSpeed.isEnabled = false
                     seekbarPitch.isEnabled = false
+                    startButton.isEnabled = false
                 }
             } else {
                 AlertDialogFragment().show(parentFragmentManager, ALERT_DIALOG)
@@ -148,6 +152,7 @@ class HomeFragment : Fragment(R.layout.fragment_home), SeekBar.OnSeekBarChangeLi
         binding.apply {
             seekbarPitch.isEnabled = true
             seekbarSpeed.isEnabled = true
+            startButton.isEnabled = true
         }
     }
 

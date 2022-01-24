@@ -31,8 +31,9 @@
             android:layout_height="60dp"
             android:layout_below="@id/close_btn"
             android:background="@drawable/round_button_camera"
-            android:gravity="center"
-            app:backgroundTint="@color/dark_purple">
+            android:clickable="true"
+            android:focusable="true"
+            android:gravity="center">
 
             <ImageView
                 android:layout_width="30dp"

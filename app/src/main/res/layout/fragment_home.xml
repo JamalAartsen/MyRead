@@ -77,7 +77,7 @@
         android:layout_height="wrap_content"
         android:layout_marginLeft="40dp"
         android:layout_marginRight="40dp"
-        android:background="@drawable/btn_bg"
+        android:background="@drawable/btn_state"
         android:fontFamily="@font/ubuntu_medium"
         android:text="@string/start"
         android:textSize="16dp"
