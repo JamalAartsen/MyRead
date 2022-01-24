@@ -1,6 +1,7 @@
 package com.jamal.myread.ui.fragments
 
 import android.app.Activity
+import android.content.Context
 import android.media.projection.MediaProjectionManager
 import android.os.Bundle
 import android.util.Log
@@ -11,14 +12,21 @@ import android.widget.SeekBar
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.content.ContextCompat
+import androidx.datastore.core.DataStore
+import androidx.datastore.preferences.core.Preferences
+import androidx.datastore.preferences.core.edit
+import androidx.datastore.preferences.core.floatPreferencesKey
+import androidx.datastore.preferences.preferencesDataStore
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.lifecycleScope
+import com.google.android.material.snackbar.Snackbar
 import com.jamal.myread.R
 import com.jamal.myread.databinding.FragmentHomeBinding
 import com.jamal.myread.model.MessageEvent
 import com.jamal.myread.viewmodel.HomeViewModel
 import dagger.hilt.android.AndroidEntryPoint
+import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.launch
 import org.greenrobot.eventbus.EventBus
 import org.greenrobot.eventbus.Subscribe
@@ -35,19 +43,20 @@ class HomeFragment : Fragment(R.layout.fragment_home), SeekBar.OnSeekBarChangeLi
     private val viewModel by viewModels<HomeViewModel>()
     private var pitchSeekbar: Float? = null
     private var speedSeekbar: Float? = null
+    private val Context.dataStore: DataStore<Preferences> by preferencesDataStore(name = "voice_Settings")
     private val getResult = registerForActivityResult(
         ActivityResultContracts.StartActivityForResult()
     ) {
         if (it.resultCode == Activity.RESULT_OK) {
-            viewLifecycleOwner.lifecycleScope.launch {
-                viewModel.updatePreferencesVoice(requireContext(), pitchSeekbar, speedSeekbar)
-                viewModel.startService(
-                    requireActivity(),
-                    requireContext(),
-                    it.resultCode,
-                    it.data!!
-                )
-            }
+            viewModel.startService(
+                requireActivity(),
+                requireContext(),
+                it.resultCode,
+                it.data!!,
+                pitchSeekbar,
+                speedSeekbar
+            )
+
         } else {
             binding.apply {
                 seekbarPitch.isEnabled = true
@@ -73,6 +82,12 @@ class HomeFragment : Fragment(R.layout.fragment_home), SeekBar.OnSeekBarChangeLi
         super.onViewCreated(view, savedInstanceState)
 
         setSettingsVoice(binding)
+
+        viewLifecycleOwner.lifecycleScope.launch {
+            binding.seekbarSpeed.progress = readVoiceSettings(PreferencesKeys.SPEED).times(50).toInt()
+            binding.seekbarPitch.progress = readVoiceSettings(PreferencesKeys.PITCH).times(50).toInt()
+        }
+
         binding.startButton.setOnClickListener {
             if (viewModel.checkOverlayPermission(requireContext())) {
                 val mProjectionManager =
@@ -86,6 +101,22 @@ class HomeFragment : Fragment(R.layout.fragment_home), SeekBar.OnSeekBarChangeLi
                 AlertDialogFragment().show(parentFragmentManager, ALERT_DIALOG)
             }
         }
+    }
+
+    private suspend fun saveVoiceSettings(key: Preferences.Key<Float>, value: Float) {
+        requireContext().dataStore.edit { voiceSettings ->
+            voiceSettings[key] = value
+        }
+    }
+
+    private suspend fun readVoiceSettings(key: Preferences.Key<Float>): Float {
+        val preferences = requireContext().dataStore.data.first()
+        return preferences[key] ?: 1f
+    }
+
+    private object PreferencesKeys {
+        val PITCH = floatPreferencesKey("pitch")
+        val SPEED = floatPreferencesKey("speed")
     }
 
     @Subscribe(sticky = true, threadMode = ThreadMode.MAIN)
@@ -133,10 +164,16 @@ class HomeFragment : Fragment(R.layout.fragment_home), SeekBar.OnSeekBarChangeLi
         seekBar.let {
             if (binding.seekbarSpeed === it) {
                 speedSeekbar = (progress / 50.0f)
+                viewLifecycleOwner.lifecycleScope.launch {
+                    saveVoiceSettings(PreferencesKeys.SPEED, progress / 50.0f)
+                }
             }
 
             if (binding.seekbarPitch === it) {
                 pitchSeekbar = (progress / 50.0f)
+                viewLifecycleOwner.lifecycleScope.launch {
+                    saveVoiceSettings(PreferencesKeys.PITCH, progress / 50.0f)
+                }
             }
         }
     }

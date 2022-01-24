@@ -5,13 +5,16 @@ import android.content.Context
 import android.content.Intent
 import android.os.Build
 import android.provider.Settings
+import android.util.Log
 import androidx.datastore.preferences.core.*
 import androidx.lifecycle.ViewModel
+import androidx.lifecycle.viewModelScope
 import com.jamal.myread.dataStore
 import com.jamal.myread.model.HomeRepository
 import dagger.hilt.android.lifecycle.HiltViewModel
 import dagger.hilt.android.qualifiers.ApplicationContext
 import kotlinx.coroutines.flow.*
+import kotlinx.coroutines.launch
 import java.io.IOException
 import javax.inject.Inject
 
@@ -25,62 +28,13 @@ class HomeViewModel @Inject constructor(
 
     private val TAG = "HomeViewModel"
 
-    private val preferencesFlow: Flow<PreferencesVoice> = context.dataStore.data
-        .catch { exception ->
-            if (exception is IOException) {
-                emit(emptyPreferences())
-            } else {
-                throw exception
-            }
-        }
-        .map { preferences ->
-            val pitch = preferences[PreferencesKeys.PITCH] ?: 1f
-            val speed = preferences[PreferencesKeys.SPEED] ?: 1f
-            PreferencesVoice(pitch, speed)
-        }
+     fun startService(activity: Activity, context: Context, resultCode: Int, data: Intent, pitch: Float?, speed: Float?) {
 
-    suspend fun startService(activity: Activity, context: Context, resultCode: Int, data: Intent) {
-        preferencesFlow.collect { flow ->
-            repository.startService(activity, context, resultCode, data, flow.pitch, flow.speed)
-        }
-    }
+        var pitchValue = pitch ?: 1f
 
-    /**
-     * Edits values inside datatsore of de specific given key.
-     *
-     * @param context
-     * @param pitch
-     * @param speed
-     *
-     * @author Jamal Aartsen
-     */
-    suspend fun updatePreferencesVoice(context: Context, pitch: Float?, speed: Float?) {
-        context.dataStore.edit { preferences ->
-            checkIfValueIsBelowCertainNumber(pitch, preferences, PreferencesKeys.PITCH)
-            checkIfValueIsBelowCertainNumber(speed, preferences, PreferencesKeys.SPEED)
-        }
-    }
+        var speedValue = speed ?: 1f
 
-    /**
-     * Check if the given value is below 0.1f and set given value to datastore.
-     *
-     * @param value given float value (pitch or speed)
-     * @param preferences
-     * @param preferencesKeys
-     *
-     * @author Jamal Aartsen
-     */
-    private fun checkIfValueIsBelowCertainNumber(
-        value: Float?,
-        preferences: MutablePreferences,
-        preferencesKeys: Preferences.Key<Float>
-    ) {
-        if (value != null) {
-            if (value < 0.1f) preferences[preferencesKeys] = 0.1f
-            else preferences[preferencesKeys] = value
-        } else {
-            preferences[preferencesKeys] = 1f
-        }
+        repository.startService(activity, context, resultCode, data, pitchValue, speedValue)
     }
 
     /**
@@ -95,10 +49,5 @@ class HomeViewModel @Inject constructor(
         return if (Build.VERSION.SDK_INT > Build.VERSION_CODES.M) {
             Settings.canDrawOverlays(context)
         } else return true
-    }
-
-    private object PreferencesKeys {
-        val PITCH = floatPreferencesKey("pitch")
-        val SPEED = floatPreferencesKey("speed")
     }
 }
