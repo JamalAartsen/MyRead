@@ -23,6 +23,8 @@ import com.jamal.myread.R
 import com.jamal.myread.dataStore
 import com.jamal.myread.databinding.FragmentHomeBinding
 import com.jamal.myread.model.MessageEvent
+import com.jamal.myread.utils.DataStoreVoiceSettings
+import com.jamal.myread.utils.PreferencesKeys
 import com.jamal.myread.viewmodel.HomeViewModel
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.flow.first
@@ -30,6 +32,15 @@ import kotlinx.coroutines.launch
 import org.greenrobot.eventbus.EventBus
 import org.greenrobot.eventbus.Subscribe
 import org.greenrobot.eventbus.ThreadMode
+import javax.inject.Inject
+import androidx.core.content.ContextCompat.getSystemService
+
+import android.app.ActivityManager
+import android.content.Context
+import androidx.core.content.ContextCompat.getSystemService
+import com.google.android.material.snackbar.Snackbar
+import com.jamal.myread.model.ScreenReaderService
+
 
 private const val ALERT_DIALOG = "AlertDialog"
 
@@ -42,6 +53,9 @@ class HomeFragment : Fragment(R.layout.fragment_home), SeekBar.OnSeekBarChangeLi
     private val viewModel by viewModels<HomeViewModel>()
     private var pitchSeekbar: Float? = null
     private var speedSeekbar: Float? = null
+
+    @Inject
+    lateinit var dataStoreVoiceSettings: DataStoreVoiceSettings
     private val getResult = registerForActivityResult(
         ActivityResultContracts.StartActivityForResult()
     ) {
@@ -82,9 +96,25 @@ class HomeFragment : Fragment(R.layout.fragment_home), SeekBar.OnSeekBarChangeLi
 
         setSettingsVoice(binding)
 
+        if (isMyServiceRunning(ScreenReaderService::class.java)) {
+            binding.apply {
+                seekbarPitch.isEnabled = false
+                seekbarSpeed.isEnabled = false
+                startButton.isEnabled = false
+            }
+        }
+
         viewLifecycleOwner.lifecycleScope.launch {
-            voiceSettingsSeekBarProgressAnimation(binding.seekbarSpeed, readVoiceSettings(PreferencesKeys.SPEED).times(50).toInt())
-            voiceSettingsSeekBarProgressAnimation(binding.seekbarPitch, readVoiceSettings(PreferencesKeys.PITCH).times(50).toInt())
+            voiceSettingsSeekBarProgressAnimation(
+                binding.seekbarSpeed,
+                dataStoreVoiceSettings.readVoiceSettings(requireContext(), PreferencesKeys.SPEED)
+                    .times(50).toInt()
+            )
+            voiceSettingsSeekBarProgressAnimation(
+                binding.seekbarPitch,
+                dataStoreVoiceSettings.readVoiceSettings(requireContext(), PreferencesKeys.PITCH)
+                    .times(50).toInt()
+            )
         }
 
         val animation = AnimationUtils.loadAnimation(requireContext(), R.anim.bounce)
@@ -108,6 +138,24 @@ class HomeFragment : Fragment(R.layout.fragment_home), SeekBar.OnSeekBarChangeLi
     }
 
     /**
+     * Checks if a given service class is running.
+     *
+     * @param serviceClass Given Service class you want to know if it is running
+     *
+     * @author Jamal Aartsen
+     */
+    private fun isMyServiceRunning(serviceClass: Class<*>): Boolean {
+        val manager =
+            requireActivity().getSystemService(Context.ACTIVITY_SERVICE) as ActivityManager?
+        for (service in manager!!.getRunningServices(Int.MAX_VALUE)) {
+            if (serviceClass.name.equals(service.service.className)) {
+                return true
+            }
+        }
+        return false
+    }
+
+    /**
      * Gives the seekbar progress animation. It goes from 50 to given value in 250 msec, it gives a
      * smooth  effect.
      *
@@ -121,22 +169,6 @@ class HomeFragment : Fragment(R.layout.fragment_home), SeekBar.OnSeekBarChangeLi
             duration = 250
             start()
         }
-    }
-
-    private suspend fun saveVoiceSettings(key: Preferences.Key<Float>, value: Float) {
-        requireContext().dataStore.edit { voiceSettings ->
-            voiceSettings[key] = value
-        }
-    }
-
-    private suspend fun readVoiceSettings(key: Preferences.Key<Float>): Float {
-        val preferences = requireContext().dataStore.data.first()
-        return preferences[key] ?: 1f
-    }
-
-    private object PreferencesKeys {
-        val PITCH = floatPreferencesKey("pitch")
-        val SPEED = floatPreferencesKey("speed")
     }
 
     /**
@@ -199,14 +231,22 @@ class HomeFragment : Fragment(R.layout.fragment_home), SeekBar.OnSeekBarChangeLi
             if (binding.seekbarSpeed === it) {
                 speedSeekbar = (progress / 50.0f)
                 viewLifecycleOwner.lifecycleScope.launch {
-                    saveVoiceSettings(PreferencesKeys.SPEED, progress / 50.0f)
+                    dataStoreVoiceSettings.saveVoiceSettings(
+                        requireContext(),
+                        PreferencesKeys.SPEED,
+                        progress / 50.0f
+                    )
                 }
             }
 
             if (binding.seekbarPitch === it) {
                 pitchSeekbar = (progress / 50.0f)
                 viewLifecycleOwner.lifecycleScope.launch {
-                    saveVoiceSettings(PreferencesKeys.PITCH, progress / 50.0f)
+                    dataStoreVoiceSettings.saveVoiceSettings(
+                        requireContext(),
+                        PreferencesKeys.PITCH,
+                        progress / 50.0f
+                    )
                 }
             }
         }
