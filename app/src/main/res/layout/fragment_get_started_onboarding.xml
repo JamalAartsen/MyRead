@@ -6,7 +6,7 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:id="@+id/getStartedLayout"
     android:background="@drawable/cloud_bg"
-    tools:context=".ui.fragments.GetStartedFragment">
+    tools:context=".ui.fragments.onBoarding.GetStartedOnBoardingFragment">
 
     <ImageView
         android:id="@+id/read_person_intro"
@@ -60,11 +60,11 @@
         android:layout_height="wrap_content"
         android:layout_marginLeft="30dp"
         android:layout_marginRight="30dp"
+        android:layout_marginBottom="30dp"
         android:background="@drawable/btn_bg"
         android:text="@string/get_started"
         android:elevation="10dp"
         app:backgroundTint="@null"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/relativeLayout" />
+        app:layout_constraintBottom_toBottomOf="parent" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

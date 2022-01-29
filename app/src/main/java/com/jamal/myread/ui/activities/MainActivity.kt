@@ -28,7 +28,7 @@ class MainActivity : AppCompatActivity() {
         val navController = navHostFragment.navController
 
         navController.addOnDestinationChangedListener { _, destination, _ ->
-            if (destination.id == R.id.getStartedFragment) {
+            if (destination.id == R.id.viewPagerFragment) {
                 binding.toolbar.visibility = View.GONE
             } else {
                 binding.toolbar.visibility = View.VISIBLE

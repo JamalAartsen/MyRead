@@ -12,4 +12,15 @@
     <string name="speed">Speed</string>
     <string name="pitch">Pitch</string>
     <string name="click_on_the_start_button_below_to_start_the_app_and_let_your_phone_read_aloud">Click on the \'START\' button below to activate the read button and let your phone read aloud!</string>
+    <string name="tutorial">Tutorial</string>
+    <string name="tutorial_text_onboarding">MyRead is the app that lets you read text aloud on your screen. In the following screens we explain how you can use the app.</string>
+    <string name="next">NEXT</string>
+    <string name="previous">PREVIOUS</string>
+    <string name="finish">FINISH</string>
+    <string name="voice_settings">Voice Settings</string>
+    <string name="voice_settings_text_onBoarding">You can change the pitch and speed of the voice, so that you can use a higher voice or because you want to adjust the reading speed!</string>
+    <string name="introduction">Introduction</string>
+    <string name="introduction_text">MyRead is the app that allows you to have text on your screen read out loud by your phone! All you have to do is open the app and press start.</string>
+    <string name="read_item_text">When you have clicked on the start button, another button appears. Just click on it and your phone will read the text out loud.</string>
+    <string name="read_button">Read Button</string>
 </resources>

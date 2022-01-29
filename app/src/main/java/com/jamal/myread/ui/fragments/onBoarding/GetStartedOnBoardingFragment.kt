@@ -1,28 +1,28 @@
-package com.jamal.myread.ui.fragments
+package com.jamal.myread.ui.fragments.onBoarding
 
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.view.animation.AnimationUtils
 import androidx.core.content.ContextCompat
 import androidx.fragment.app.Fragment
-import androidx.navigation.Navigation
+import androidx.viewpager2.widget.ViewPager2
 import com.jamal.myread.R
-import com.jamal.myread.databinding.FragmentGetStartedBinding
+import com.jamal.myread.databinding.FragmentGetStartedOnboardingBinding
 
-class GetStartedFragment : Fragment(R.layout.fragment_get_started) {
+class GetStartedOnBoardingFragment : Fragment(R.layout.fragment_get_started_onboarding) {
 
-    private var _binding: FragmentGetStartedBinding? = null
+    private var _binding: FragmentGetStartedOnboardingBinding? = null
     private val binding get() = _binding!!
 
     override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup?,
         savedInstanceState: Bundle?
-    ): View? {
-        _binding = FragmentGetStartedBinding.inflate(inflater, container, false)
-        requireActivity().window.navigationBarColor = ContextCompat.getColor(requireContext(),
+    ): View {
+        _binding = FragmentGetStartedOnboardingBinding.inflate(inflater, container, false)
+        requireActivity().window.navigationBarColor = ContextCompat.getColor(
+            requireContext(),
             R.color.light_purple
         )
         return binding.root
@@ -31,8 +31,10 @@ class GetStartedFragment : Fragment(R.layout.fragment_get_started) {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
+        val viewPager = activity?.findViewById<ViewPager2>(R.id.viewPager)
+
         binding.introGetStartedBtn.setOnClickListener {
-            Navigation.findNavController(binding.root).navigate(R.id.actionNavigateToHomeFragment)
+            viewPager?.currentItem = 1
         }
     }
 
