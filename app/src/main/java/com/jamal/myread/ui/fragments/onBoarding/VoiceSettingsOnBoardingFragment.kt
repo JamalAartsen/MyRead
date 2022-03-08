@@ -7,11 +7,9 @@ import android.view.ViewGroup
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.lifecycleScope
 import androidx.navigation.Navigation
-import androidx.viewpager2.widget.ViewPager2
 import com.jamal.myread.R
 import com.jamal.myread.databinding.FragmentVoiceSettingsOnboardingBinding
 import com.jamal.myread.utils.DataStoreOnBoarding
-import com.jamal.myread.utils.DataStoreVoiceSettings
 import com.jamal.myread.utils.PreferencesKeys
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.launch

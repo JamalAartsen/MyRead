@@ -17,9 +17,7 @@ class HomeViewModel @Inject constructor(
     private val repository: HomeRepository
 ) : ViewModel() {
 
-    private val TAG = "HomeViewModel"
-
-     fun startService(activity: Activity, context: Context, resultCode: Int, data: Intent, pitch: Float?, speed: Float?) {
+    fun startService(activity: Activity, context: Context, resultCode: Int, data: Intent, pitch: Float?, speed: Float?) {
 
         val pitchValue = pitch ?: 1f
 

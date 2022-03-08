@@ -114,11 +114,7 @@ class HomeFragment : Fragment(R.layout.fragment_home), SeekBar.OnSeekBarChangeLi
             )
         }
 
-        val animation = AnimationUtils.loadAnimation(requireContext(), R.anim.bounce)
-
-
         binding.startButton.setOnClickListener {
-            binding.startButton.startAnimation(animation)
             if (viewModel.checkOverlayPermission(requireContext())) {
                 val mProjectionManager =
                     requireActivity().getSystemService(AppCompatActivity.MEDIA_PROJECTION_SERVICE) as MediaProjectionManager

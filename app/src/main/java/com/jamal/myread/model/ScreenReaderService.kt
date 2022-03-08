@@ -77,19 +77,25 @@ class ScreenReaderService : Service() {
                 Log.d("NULL", "onCreate: Media is null")
             }
 
-            startProjection(resultCode!!, data)
-            getImageFromExternalStorage()
+            binding.readButtonContainer.visibility = View.INVISIBLE
+
+            Handler(Looper.getMainLooper()).postDelayed({
+
+                startProjection(resultCode!!, data)
+                getImageFromExternalStorage()
+            }, 100)
             Handler(Looper.getMainLooper()).postDelayed({
                 stopProjection()
                 returnTextFromImage()
+                binding.readButtonContainer.visibility = View.VISIBLE
             }, 500)
 
         }
 
-        if (Build.VERSION.SDK_INT > Build.VERSION_CODES.O) {
-            LAYOUT_TYPE = WindowManager.LayoutParams.TYPE_APPLICATION_OVERLAY
+        LAYOUT_TYPE = if (Build.VERSION.SDK_INT > Build.VERSION_CODES.O) {
+            WindowManager.LayoutParams.TYPE_APPLICATION_OVERLAY
         } else {
-            LAYOUT_TYPE = WindowManager.LayoutParams.TYPE_PHONE
+            WindowManager.LayoutParams.TYPE_PHONE
         }
 
         floatWindowLayoutParams = WindowManager.LayoutParams(
@@ -121,29 +127,25 @@ class ScreenReaderService : Service() {
         var px = 0.0
         var py = 0.0
 
-        binding.readerBtn.setOnTouchListener(object : View.OnTouchListener {
+        binding.readerBtn.setOnTouchListener { v, event ->
+            when (event!!.action) {
+                MotionEvent.ACTION_DOWN -> {
+                    x = updatedFloatWindowLayoutParams.x.toDouble()
+                    y = updatedFloatWindowLayoutParams.y.toDouble()
 
-            override fun onTouch(v: View?, event: MotionEvent?): Boolean {
-                when (event!!.action) {
-                    MotionEvent.ACTION_DOWN -> {
-                        x = updatedFloatWindowLayoutParams.x.toDouble()
-                        y = updatedFloatWindowLayoutParams.y.toDouble()
-
-                        px = event.rawX.toDouble()
-                        py = event.rawY.toDouble()
-                    }
-
-                    MotionEvent.ACTION_MOVE -> {
-                        updatedFloatWindowLayoutParams.x = (x + event.rawX - px).toInt()
-                        updatedFloatWindowLayoutParams.y = (y + event.rawY - py).toInt()
-
-                        windowManager.updateViewLayout(floatView, updatedFloatWindowLayoutParams)
-                    }
+                    px = event.rawX.toDouble()
+                    py = event.rawY.toDouble()
                 }
-                return false
-            }
 
-        })
+                MotionEvent.ACTION_MOVE -> {
+                    updatedFloatWindowLayoutParams.x = (x + event.rawX - px).toInt()
+                    updatedFloatWindowLayoutParams.y = (y + event.rawY - py).toInt()
+
+                    windowManager.updateViewLayout(floatView, updatedFloatWindowLayoutParams)
+                }
+            }
+            false
+        }
 
         // create store dir
         val externalFilesDir = getExternalFilesDir(null)
@@ -192,13 +194,13 @@ class ScreenReaderService : Service() {
         }
 
         if (image != null) {
-            val result = recognizer.process(image!!)
+            recognizer.process(image)
                 .addOnSuccessListener { visionText ->
-                    Log.d(TAG, "TASK COMPLETED!!! ${visionText.text}")
                     deleteAllImagesFromExternalStorage()
 
-                    Log.d(TAG, "returnTextFromImage: PITCH: $pitch")
-                    Log.d(TAG, "returnTextFromImage: SPEED $speed")
+                    for (text in visionText.textBlocks) {
+                        Log.d("VisionText", text.text)
+                    }
 
                     speak(mTTS, visionText, pitch!!, speed!!)
                 }
@@ -249,7 +251,6 @@ class ScreenReaderService : Service() {
         if (fileArray?.isEmpty() != null) {
             for (files in fileArray) {
                 firstFile = files
-                Log.d(TAG, "getImageFromExternalStorage: $files")
                 break
             }
         }
@@ -258,29 +259,29 @@ class ScreenReaderService : Service() {
     }
 
     override fun onStartCommand(intent: Intent, flags: Int, startId: Int): Int {
-        if (isStartCommand(intent)) {
-            val notification = NotificationUtils.getNotification(this)
-            startForeground(notification!!.first, notification!!.second)
+        when {
+            isStartCommand(intent) -> {
+                val notification = NotificationUtils.getNotification(this)
+                startForeground(notification!!.first, notification.second)
 
-            resultCode = intent.getIntExtra(RESULT_CODE, Activity.RESULT_CANCELED)
-            data = intent.getParcelableExtra<Intent>(DATA)
-            pitch = intent.getFloatExtra(PREFERENCES_VOICE_PITCH, 1f)
-            speed = intent.getFloatExtra(PREFERENCES_VOICE_SPEED, 1f)
-
-            Log.d(TAG, "PITCH: $pitch")
-            Log.d(TAG, "SPEED: $speed")
-
-        } else if (isStopCommand(intent)) {
-            stopProjection()
-        } else {
-            stopSelf()
+                resultCode = intent.getIntExtra(RESULT_CODE, Activity.RESULT_CANCELED)
+                data = intent.getParcelableExtra(DATA)
+                pitch = intent.getFloatExtra(PREFERENCES_VOICE_PITCH, 1f)
+                speed = intent.getFloatExtra(PREFERENCES_VOICE_SPEED, 1f)
+            }
+            isStopCommand(intent) -> {
+                stopProjection()
+            }
+            else -> {
+                stopSelf()
+            }
         }
         mTTS = TextToSpeech(this) { status ->
             if (status == TextToSpeech.SUCCESS) {
                 var result = mTTS.setLanguage(Locale.ENGLISH)
 
                 if (result != 0) {
-                    result = 0;
+                    result = 0
                 }
 
                 if (result == TextToSpeech.LANG_MISSING_DATA
@@ -321,7 +322,7 @@ class ScreenReaderService : Service() {
         if (mMediaProjection != null) {
             // display metrics
             mDensity = Resources.getSystem().displayMetrics.densityDpi
-            val windowManager = getSystemService(WINDOW_SERVICE) as WindowManager
+            getSystemService(WINDOW_SERVICE) as WindowManager
             val defaultDisplay =
                 getSystemService<DisplayManager>()?.getDisplay(Display.DEFAULT_DISPLAY)
             mDisplay = defaultDisplay
@@ -390,12 +391,12 @@ class ScreenReaderService : Service() {
 
                         // write bitmap to a file
                         fos =
-                            FileOutputStream(mStoreDir + "/myscreen_" + IMAGES_PRODUCED + ".png")
+                            FileOutputStream("$mStoreDir/myscreen_$IMAGES_PRODUCED.png")
                         bitmap!!.compress(Bitmap.CompressFormat.JPEG, 100, fos)
                         IMAGES_PRODUCED++
                         Log.e(
                             TAG,
-                            "captured image kayo: " + IMAGES_PRODUCED
+                            "captured image kayo: $IMAGES_PRODUCED"
                         )
                         Log.d(TAG, "onImageAvailable jamal: $fos")
                     }
@@ -451,7 +452,6 @@ class ScreenReaderService : Service() {
     }
 
     companion object {
-        private const val TAG = "ScreenCaptureService"
         private const val RESULT_CODE = "RESULT_CODE"
         private const val DATA = "DATA"
         private const val ACTION = "ACTION"

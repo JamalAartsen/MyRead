@@ -6,6 +6,7 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.core.content.ContextCompat
 import androidx.fragment.app.Fragment
+import androidx.navigation.fragment.NavHostFragment
 import androidx.viewpager2.widget.ViewPager2
 import com.jamal.myread.R
 import com.jamal.myread.databinding.FragmentGetStartedOnboardingBinding
@@ -32,9 +33,15 @@ class GetStartedOnBoardingFragment : Fragment(R.layout.fragment_get_started_onbo
         super.onViewCreated(view, savedInstanceState)
 
         val viewPager = activity?.findViewById<ViewPager2>(R.id.viewPager)
+        val navHostFragment =
+            requireActivity().supportFragmentManager.findFragmentById(R.id.fragment_container) as NavHostFragment
+
+        val graphInflater = navHostFragment.navController.navInflater
+        val navGraph = graphInflater.inflate(R.navigation.my_nav)
 
         binding.introGetStartedBtn.setOnClickListener {
             viewPager?.currentItem = 1
+            navGraph.startDestination = R.id.homeFragment
         }
     }
 
