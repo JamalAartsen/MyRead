@@ -8,7 +8,6 @@ import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.view.animation.AnimationUtils
 import android.widget.SeekBar
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.app.AppCompatActivity
@@ -17,27 +16,20 @@ import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.lifecycleScope
 import com.jamal.myread.R
-import com.jamal.myread.dataStore
 import com.jamal.myread.databinding.FragmentHomeBinding
 import com.jamal.myread.model.MessageEvent
 import com.jamal.myread.utils.DataStoreVoiceSettings
 import com.jamal.myread.utils.PreferencesKeys
 import com.jamal.myread.viewmodel.HomeViewModel
 import dagger.hilt.android.AndroidEntryPoint
-import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.launch
 import org.greenrobot.eventbus.EventBus
 import org.greenrobot.eventbus.Subscribe
 import org.greenrobot.eventbus.ThreadMode
 import javax.inject.Inject
-import androidx.core.content.ContextCompat.getSystemService
-
 import android.app.ActivityManager
 import android.content.Context
-import androidx.core.content.ContextCompat.getSystemService
-import com.google.android.material.snackbar.Snackbar
 import com.jamal.myread.model.ScreenReaderService
-
 
 private const val ALERT_DIALOG = "AlertDialog"
 

@@ -52,7 +52,7 @@ object NotificationUtils {
         return builder.build()
     }
 
-    fun setPriority(): Int {
+    private fun setPriority(): Int {
         return if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
             NotificationManager.IMPORTANCE_LOW
         } else Notification.PRIORITY_LOW

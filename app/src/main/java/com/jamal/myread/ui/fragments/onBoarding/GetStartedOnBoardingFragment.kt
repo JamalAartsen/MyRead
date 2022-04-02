@@ -7,8 +7,6 @@ import android.view.ViewGroup
 import androidx.core.content.ContextCompat
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
-import androidx.navigation.fragment.NavHostFragment
-import androidx.viewpager2.widget.ViewPager2
 import com.jamal.myread.R
 import com.jamal.myread.databinding.FragmentGetStartedOnboardingBinding
 import com.jamal.myread.viewmodel.NavigateViewPagerViewModel

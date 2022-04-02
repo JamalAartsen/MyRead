@@ -10,8 +10,6 @@ import com.jamal.myread.model.HomeRepository
 import dagger.hilt.android.lifecycle.HiltViewModel
 import javax.inject.Inject
 
-data class PreferencesVoice(val pitch: Float, val speed: Float)
-
 @HiltViewModel
 class HomeViewModel @Inject constructor(
     private val repository: HomeRepository
