@@ -5,13 +5,16 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.Fragment
-import androidx.viewpager2.widget.ViewPager2
-import com.jamal.myread.R
+import androidx.fragment.app.viewModels
 import com.jamal.myread.databinding.FragmentReadItemOnboardingBinding
+import com.jamal.myread.viewmodel.NavigateViewPagerViewModel
 
 class ReadItemOnBoardingFragment : Fragment() {
     private var _binding: FragmentReadItemOnboardingBinding? = null
     private val binding get() = _binding!!
+    private val navigateViewPagerViewModel: NavigateViewPagerViewModel by viewModels(
+        ownerProducer = { requireParentFragment() }
+    )
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -25,10 +28,8 @@ class ReadItemOnBoardingFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        val viewPager = activity?.findViewById<ViewPager2>(R.id.viewPager)
-
         binding.btnFinishReadItem.setOnClickListener {
-            viewPager?.currentItem = 3
+            navigateViewPagerViewModel.navigateTo(3)
         }
     }
 

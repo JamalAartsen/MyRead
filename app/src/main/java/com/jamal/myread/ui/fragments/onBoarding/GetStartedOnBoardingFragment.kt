@@ -6,15 +6,20 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.core.content.ContextCompat
 import androidx.fragment.app.Fragment
+import androidx.fragment.app.viewModels
 import androidx.navigation.fragment.NavHostFragment
 import androidx.viewpager2.widget.ViewPager2
 import com.jamal.myread.R
 import com.jamal.myread.databinding.FragmentGetStartedOnboardingBinding
+import com.jamal.myread.viewmodel.NavigateViewPagerViewModel
 
-class GetStartedOnBoardingFragment : Fragment(R.layout.fragment_get_started_onboarding) {
+class GetStartedOnBoardingFragment : Fragment() {
 
     private var _binding: FragmentGetStartedOnboardingBinding? = null
     private val binding get() = _binding!!
+    private val navigateViewPagerViewModel: NavigateViewPagerViewModel by viewModels(
+        ownerProducer = { requireParentFragment() }
+    )
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -32,15 +37,8 @@ class GetStartedOnBoardingFragment : Fragment(R.layout.fragment_get_started_onbo
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        val viewPager = activity?.findViewById<ViewPager2>(R.id.viewPager)
-        val navHostFragment =
-            requireActivity().supportFragmentManager.findFragmentById(R.id.fragment_container) as NavHostFragment
-
-        val graphInflater = navHostFragment.navController.navInflater
-        val navGraph = graphInflater.inflate(R.navigation.main_navigation_graph)
-
         binding.introGetStartedBtn.setOnClickListener {
-            viewPager?.currentItem = 1
+            navigateViewPagerViewModel.navigateTo(1)
         }
     }
 

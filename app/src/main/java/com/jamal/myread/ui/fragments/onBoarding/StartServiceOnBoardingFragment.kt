@@ -5,13 +5,17 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.Fragment
-import androidx.viewpager2.widget.ViewPager2
+import androidx.fragment.app.viewModels
 import com.jamal.myread.R
 import com.jamal.myread.databinding.FragmentStartServiceOnboardingBinding
+import com.jamal.myread.viewmodel.NavigateViewPagerViewModel
 
-class StartServiceOnBoardingFragment : Fragment(R.layout.fragment_start_service_onboarding) {
+class StartServiceOnBoardingFragment : Fragment() {
     private var _binding: FragmentStartServiceOnboardingBinding? = null
     private val binding get() = _binding!!
+    private val navigateViewPagerViewModel: NavigateViewPagerViewModel by viewModels(
+        ownerProducer = { requireParentFragment() }
+    )
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -25,10 +29,8 @@ class StartServiceOnBoardingFragment : Fragment(R.layout.fragment_start_service_
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        val viewPager = activity?.findViewById<ViewPager2>(R.id.viewPager)
-
         binding.btnNextStartService.setOnClickListener {
-            viewPager?.currentItem = 2
+            navigateViewPagerViewModel.navigateTo(2)
         }
     }
 

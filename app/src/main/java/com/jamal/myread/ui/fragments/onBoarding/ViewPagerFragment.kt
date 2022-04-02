@@ -5,12 +5,15 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.Fragment
+import androidx.fragment.app.viewModels
 import com.jamal.myread.databinding.FragmentViewPagerBinding
 import com.jamal.myread.ui.adapters.ViewPagerAdapter
+import com.jamal.myread.viewmodel.NavigateViewPagerViewModel
 
 class ViewPagerFragment : Fragment() {
     private var _binding: FragmentViewPagerBinding? = null
     private val binding get() = _binding!!
+    private val navigateViewPagerViewModel: NavigateViewPagerViewModel by viewModels()
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -33,11 +36,15 @@ class ViewPagerFragment : Fragment() {
 
         val adapterOnBoardingViewPager = ViewPagerAdapter(
             fragmentListOnBoarding,
-            requireActivity().supportFragmentManager,
+            childFragmentManager,
             lifecycle
         )
 
         binding.viewPager.adapter = adapterOnBoardingViewPager
+
+        navigateViewPagerViewModel.item.observe(viewLifecycleOwner) {
+            binding.viewPager.setCurrentItem(it, true)
+        }
     }
 
     override fun onDestroy() {
