@@ -2,9 +2,25 @@
 <navigation xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
-    android:id="@+id/my_nav"
-    app:startDestination="@id/viewPagerFragment">
+    android:id="@+id/main_navigation_graph"
+    app:startDestination="@id/mainFragment ">
 
+    <fragment
+        android:id="@+id/mainFragment"
+        android:name="com.jamal.myread.ui.fragments.SplashFragment"
+        android:label="fragment_main"
+        tools:layout="@layout/fragment_splash" >
+        <action
+            android:id="@+id/action_mainFragment_to_homeFragment"
+            app:destination="@id/homeFragment"
+            app:popUpTo="@id/mainFragment"
+            app:popUpToInclusive="true" />
+        <action
+            android:id="@+id/action_mainFragment_to_viewPagerFragment"
+            app:destination="@id/viewPagerFragment"
+            app:popUpTo="@id/mainFragment"
+            app:popUpToInclusive="true" />
+    </fragment>
     <fragment
         android:id="@+id/homeFragment"
         android:name="com.jamal.myread.ui.fragments.HomeFragment"
@@ -18,14 +34,5 @@
         <action
             android:id="@+id/action_viewPagerFragment_to_homeFragment"
             app:destination="@id/homeFragment" />
-    </fragment>
-    <fragment
-        android:id="@+id/splashFragment"
-        android:name="com.jamal.myread.ui.fragments.SplashFragment"
-        android:label="fragment_splash"
-        tools:layout="@layout/fragment_splash" >
-        <action
-            android:id="@+id/action_splashFragment_to_viewPagerFragment"
-            app:destination="@id/viewPagerFragment" />
     </fragment>
 </navigation>

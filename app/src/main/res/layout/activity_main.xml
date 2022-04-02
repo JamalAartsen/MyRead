@@ -8,23 +8,12 @@
     android:fitsSystemWindows="true"
     tools:context=".ui.activities.MainActivity">
 
-    <androidx.appcompat.widget.Toolbar
-        android:id="@+id/toolbar"
-        android:layout_width="match_parent"
-        android:layout_height="?attr/actionBarSize"
-        android:background="@color/dark_purple"
-        android:theme="@style/ToolBarTheme"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
-
     <androidx.fragment.app.FragmentContainerView
         android:id="@+id/fragment_container"
         android:name="androidx.navigation.fragment.NavHostFragment"
         android:layout_width="match_parent"
-        android:layout_height="0dp"
+        android:layout_height="match_parent"
         app:defaultNavHost="true"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/toolbar"
-        app:navGraph="@navigation/my_nav" />
+        app:navGraph="@navigation/main_navigation_graph" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

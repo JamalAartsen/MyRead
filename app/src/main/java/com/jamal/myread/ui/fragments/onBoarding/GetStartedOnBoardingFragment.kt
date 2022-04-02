@@ -37,11 +37,10 @@ class GetStartedOnBoardingFragment : Fragment(R.layout.fragment_get_started_onbo
             requireActivity().supportFragmentManager.findFragmentById(R.id.fragment_container) as NavHostFragment
 
         val graphInflater = navHostFragment.navController.navInflater
-        val navGraph = graphInflater.inflate(R.navigation.my_nav)
+        val navGraph = graphInflater.inflate(R.navigation.main_navigation_graph)
 
         binding.introGetStartedBtn.setOnClickListener {
             viewPager?.currentItem = 1
-            navGraph.startDestination = R.id.homeFragment
         }
     }
 

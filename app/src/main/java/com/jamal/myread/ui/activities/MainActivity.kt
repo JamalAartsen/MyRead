@@ -5,6 +5,7 @@ import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.util.Log
 import android.view.View
+import android.widget.Toast
 import androidx.core.content.ContextCompat
 import androidx.lifecycle.lifecycleScope
 import androidx.navigation.NavOptions
@@ -30,27 +31,27 @@ class MainActivity : AppCompatActivity() {
         val binding = ActivityMainBinding.inflate(layoutInflater)
         setTheme(R.style.Theme_MyRead)
         setContentView(binding.root)
-        setSupportActionBar(binding.toolbar)
         window.navigationBarColor = ContextCompat.getColor(this, R.color.light_purple)
-
-        val navHostFragment =
-            supportFragmentManager.findFragmentById(R.id.fragment_container) as NavHostFragment
-        val navController = navHostFragment.navController
-
-        lifecycleScope.launch {
-            if (dataStoreOnBoarding.readOnBoardingPreference(applicationContext, PreferencesKeys.IS_ON_BOARDING_FINISHED)) {
-                navController.navigate(R.id.homeFragment)
-            } else {
-                navController.navigate(R.id.viewPagerFragment)
-            }
-        }
-
-        navController.addOnDestinationChangedListener { _, destination, _ ->
-            if (destination.id == R.id.viewPagerFragment) {
-                binding.toolbar.visibility = View.GONE
-            } else {
-                binding.toolbar.visibility = View.VISIBLE
-            }
-        }
+//
+//
+//        val navHostFragment =
+//            supportFragmentManager.findFragmentById(R.id.fragment_container) as NavHostFragment
+//        val navController = navHostFragment.navController
+//
+//        lifecycleScope.launch {
+//            if (dataStoreOnBoarding.readOnBoardingPreference(applicationContext, PreferencesKeys.IS_ON_BOARDING_FINISHED)) {
+//                navController.navigate(R.id.homeFragment)
+//            } else {
+//                navController.navigate(R.id.viewPagerFragment)
+//            }
+//        }
+//
+//        navController.addOnDestinationChangedListener { _, destination, _ ->
+//            if (destination.id == R.id.viewPagerFragment) {
+//                binding.toolbar.visibility = View.GONE
+//            } else {
+//                binding.toolbar.visibility = View.VISIBLE
+//            }
+//        }
     }
 }

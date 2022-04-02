@@ -7,6 +7,7 @@ import android.view.ViewGroup
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.lifecycleScope
 import androidx.navigation.Navigation
+import androidx.navigation.fragment.findNavController
 import com.jamal.myread.R
 import com.jamal.myread.databinding.FragmentVoiceSettingsOnboardingBinding
 import com.jamal.myread.utils.DataStoreOnBoarding
@@ -36,7 +37,7 @@ class VoiceSettingsOnBoardingFragment : Fragment() {
         super.onViewCreated(view, savedInstanceState)
 
         binding.btnNextVoiceSettings.setOnClickListener {
-            Navigation.findNavController(binding.root)
+            findNavController()
                 .navigate(R.id.action_viewPagerFragment_to_homeFragment)
         }
 
