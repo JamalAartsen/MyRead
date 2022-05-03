@@ -12,20 +12,16 @@ import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.findNavController
 import com.jamal.myread.R
 import com.jamal.myread.databinding.FragmentSplashBinding
-import com.jamal.myread.utils.DataStoreOnBoarding
-import com.jamal.myread.utils.PreferencesKeys
+import com.jamal.myread.utils.Constants
+import com.jamal.myread.utils.SharedPreferenceOnBoarding
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.launch
-import javax.inject.Inject
 
 @AndroidEntryPoint
 class SplashFragment : Fragment() {
 
     private var _binding: FragmentSplashBinding? = null
     private val binding get() = _binding!!
-
-    @Inject
-    lateinit var dataStoreOnBoarding: DataStoreOnBoarding
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -45,10 +41,7 @@ class SplashFragment : Fragment() {
 
         Handler(Looper.getMainLooper()).postDelayed({
             viewLifecycleOwner.lifecycleScope.launch {
-                if (dataStoreOnBoarding.readOnBoardingPreference(
-                        requireContext(),
-                        PreferencesKeys.IS_ON_BOARDING_FINISHED
-                    )
+                if (SharedPreferenceOnBoarding.getPreferences(requireActivity(), Constants.ON_BOARDING_IS_FINISHED)
                 ) {
                     findNavController().navigate(R.id.action_mainFragment_to_homeFragment)
                 } else {
@@ -56,7 +49,6 @@ class SplashFragment : Fragment() {
                 }
             }
         }, 1000)
-
     }
 
     override fun onDestroyView() {

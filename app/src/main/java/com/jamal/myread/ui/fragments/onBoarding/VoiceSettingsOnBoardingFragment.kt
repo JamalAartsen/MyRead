@@ -5,23 +5,22 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.Fragment
-import androidx.lifecycle.lifecycleScope
+import androidx.fragment.app.viewModels
 import androidx.navigation.fragment.findNavController
 import com.jamal.myread.R
 import com.jamal.myread.databinding.FragmentVoiceSettingsOnboardingBinding
-import com.jamal.myread.utils.DataStoreOnBoarding
-import com.jamal.myread.utils.PreferencesKeys
+import com.jamal.myread.utils.Constants
+import com.jamal.myread.utils.SharedPreferenceOnBoarding
+import com.jamal.myread.viewmodel.NavigateViewPagerViewModel
 import dagger.hilt.android.AndroidEntryPoint
-import kotlinx.coroutines.launch
-import javax.inject.Inject
 
 @AndroidEntryPoint
 class VoiceSettingsOnBoardingFragment : Fragment() {
     private var _binding: FragmentVoiceSettingsOnboardingBinding? = null
     private val binding get() = _binding!!
-
-    @Inject
-    lateinit var dataStoreOnBoarding: DataStoreOnBoarding
+    private val navigateViewPagerViewModel: NavigateViewPagerViewModel by viewModels(
+        ownerProducer = { requireParentFragment() }
+    )
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -35,22 +34,20 @@ class VoiceSettingsOnBoardingFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        binding.btnNextVoiceSettings.setOnClickListener {
-            findNavController()
-                .navigate(R.id.action_viewPagerFragment_to_homeFragment)
+        binding.run {
+            btnNextVoiceSettings.setOnClickListener {
+                findNavController()
+                    .navigate(R.id.action_viewPagerFragment_to_homeFragment)
+                SharedPreferenceOnBoarding.savePreferences(
+                    requireActivity(),
+                    Constants.ON_BOARDING_IS_FINISHED,
+                    true
+                )
+            }
+            btnBackVoiceSettings.setOnClickListener {
+                navigateViewPagerViewModel.navigateTo(2)
+            }
         }
-
-        viewLifecycleOwner.lifecycleScope.launch {
-            onBoardingFinished()
-        }
-    }
-
-    private suspend fun onBoardingFinished() {
-        dataStoreOnBoarding.saveOnBoardingPreference(
-            requireContext(),
-            PreferencesKeys.IS_ON_BOARDING_FINISHED,
-            true
-        )
     }
 
     override fun onDestroy() {

@@ -23,4 +23,5 @@
     <string name="introduction_text">MyRead is the app that allows you to have text on your screen read out loud by your phone! All you have to do is open the app and press start.</string>
     <string name="read_item_text">When you have clicked on the start button, another button appears. Just click on it and your phone will read the text out loud.</string>
     <string name="read_button">Read Button</string>
+    <string name="back">Back</string>
 </resources>

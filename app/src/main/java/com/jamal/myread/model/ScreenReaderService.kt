@@ -52,8 +52,8 @@ class ScreenReaderService : Service() {
     private var mOrientationChangeCallback: OrientationChangeCallback? = null
     private var resultCode: Int? = null
     private var data: Intent? = null
-    private var pitch: Float? = null
-    private var speed: Float? = null
+    private var pitch: Float = 0.5f
+    private var speed: Float = 0.5f
     private val recognizer = TextRecognition.getClient(TextRecognizerOptions.DEFAULT_OPTIONS)
     lateinit var mTTS: TextToSpeech
 
@@ -202,7 +202,7 @@ class ScreenReaderService : Service() {
                         Log.d("VisionText", text.text)
                     }
 
-                    speak(mTTS, visionText, pitch!!, speed!!)
+                    speak(mTTS, visionText, pitch, speed)
                 }
                 .addOnFailureListener { e ->
                     Log.d(TAG, "Task failed! $e")

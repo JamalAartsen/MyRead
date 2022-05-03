@@ -28,8 +28,13 @@ class StartServiceOnBoardingFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        binding.btnNextStartService.setOnClickListener {
-            navigateViewPagerViewModel.navigateTo(2)
+        binding.run {
+            btnNextStartService.setOnClickListener {
+                navigateViewPagerViewModel.navigateTo(2)
+            }
+            btnBackStartService.setOnClickListener {
+                navigateViewPagerViewModel.navigateTo(0)
+            }
         }
     }
 

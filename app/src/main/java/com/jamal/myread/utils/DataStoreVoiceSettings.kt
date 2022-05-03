@@ -2,7 +2,6 @@ package com.jamal.myread.utils
 
 import android.content.Context
 import androidx.datastore.preferences.core.Preferences
-import androidx.datastore.preferences.core.booleanPreferencesKey
 import androidx.datastore.preferences.core.edit
 import androidx.datastore.preferences.core.floatPreferencesKey
 import com.jamal.myread.dataStore
@@ -28,12 +27,9 @@ class DataStoreVoiceSettings @Inject constructor() {
         val preferences = context.dataStore.data.first()
         return preferences[key] ?: 1f
     }
-
-
 }
 
 object PreferencesKeys {
     val PITCH = floatPreferencesKey("pitch")
     val SPEED = floatPreferencesKey("speed")
-    val IS_ON_BOARDING_FINISHED = booleanPreferencesKey("is_onBoarding_finished")
 }

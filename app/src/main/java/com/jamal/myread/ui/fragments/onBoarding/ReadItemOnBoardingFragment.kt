@@ -28,8 +28,13 @@ class ReadItemOnBoardingFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        binding.btnFinishReadItem.setOnClickListener {
-            navigateViewPagerViewModel.navigateTo(3)
+        binding.run {
+            btnNextReadItem.setOnClickListener {
+                navigateViewPagerViewModel.navigateTo(3)
+            }
+            btnBackReadItem.setOnClickListener {
+                navigateViewPagerViewModel.navigateTo(1)
+            }
         }
     }
 

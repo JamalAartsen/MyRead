@@ -3,8 +3,7 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    android:background="@drawable/cloud_bg">
+    android:layout_height="match_parent">
 
     <RelativeLayout
         android:layout_width="80dp"
@@ -54,8 +53,8 @@
         android:id="@+id/relativeLayout"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:paddingLeft="30dp"
-        android:paddingRight="30dp"
+        android:paddingLeft="32dp"
+        android:paddingRight="32dp"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
@@ -85,12 +84,25 @@
             android:textStyle="normal" />
     </RelativeLayout>
 
-    <Button
-        android:id="@+id/btn_finish_read_item"
-        android:layout_width="match_parent"
+    <androidx.constraintlayout.widget.Guideline
+        android:id="@+id/guideline"
+        android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginStart="30dp"
-        android:layout_marginEnd="30dp"
+        android:orientation="vertical"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintGuide_begin="92dp"
+        app:layout_constraintGuide_percent="0.5"
+        app:layout_constraintHorizontal_bias="0.5"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <Button
+        android:id="@+id/btn_next_read_item"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="16dp"
+        android:layout_marginEnd="32dp"
         android:layout_marginBottom="30dp"
         android:background="@drawable/btn_state"
         android:elevation="10dp"
@@ -98,6 +110,21 @@
         app:backgroundTint="@null"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="@+id/guideline" />
+
+    <Button
+        android:id="@+id/btn_back_read_item"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="32dp"
+        android:layout_marginEnd="16dp"
+        android:layout_marginBottom="30dp"
+        android:background="@drawable/btn_state"
+        android:elevation="10dp"
+        android:text="@string/back"
+        app:backgroundTint="@null"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toStartOf="@+id/guideline"
         app:layout_constraintStart_toStartOf="parent" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>
