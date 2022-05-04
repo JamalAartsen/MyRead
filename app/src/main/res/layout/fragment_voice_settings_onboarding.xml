@@ -1,54 +1,53 @@
 <?xml version="1.0" encoding="utf-8"?>
 <androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
-    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent">
 
-    <ImageView
-        android:id="@+id/voice_person"
-        android:layout_width="200dp"
-        android:layout_height="200dp"
-        app:layout_constraintBottom_toTopOf="@+id/relativeLayout"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintVertical_bias="0.8"
-        app:srcCompat="@drawable/ic_voice" />
-
     <RelativeLayout
-        android:id="@+id/relativeLayout"
-        android:layout_width="wrap_content"
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:paddingLeft="32dp"
-        android:paddingRight="32dp"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintBottom_toTopOf="@+id/btn_back_voice_settings"
         app:layout_constraintTop_toTopOf="parent">
 
-        <TextView
-            android:id="@+id/voice_settings_title"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:fontFamily="@font/ubuntu_bold"
-            android:text="@string/voice_settings"
-            android:textAlignment="center"
-            android:textColor="@color/white"
-            android:textSize="30dp"
-            android:textStyle="bold" />
+        <ImageView
+            android:id="@+id/voice_person"
+            android:layout_width="200dp"
+            android:layout_height="200dp"
+            android:layout_centerHorizontal="true"
+            app:srcCompat="@drawable/ic_voice" />
 
-        <TextView
-            android:id="@+id/voice_settings_text"
-            android:layout_width="match_parent"
+        <RelativeLayout
+            android:id="@+id/relativeLayout"
+            android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_below="@+id/voice_settings_title"
-            android:fontFamily="@font/ubuntu_regular"
-            android:text="@string/voice_settings_text_onBoarding"
-            android:textAlignment="center"
-            android:textColor="@color/white"
-            android:textSize="26dp"
-            android:textStyle="normal" />
+            android:layout_below="@+id/voice_person"
+            android:paddingLeft="32dp"
+            android:paddingRight="32dp">
+
+            <TextView
+                android:id="@+id/voice_settings_title"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:fontFamily="@font/ubuntu_bold"
+                android:text="@string/voice_settings"
+                android:textAlignment="center"
+                android:textColor="@color/white"
+                android:textSize="30dp"
+                android:textStyle="bold" />
+
+            <TextView
+                android:id="@+id/voice_settings_text"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_below="@+id/voice_settings_title"
+                android:fontFamily="@font/ubuntu_regular"
+                android:text="@string/voice_settings_text_onBoarding"
+                android:textAlignment="center"
+                android:textColor="@color/white"
+                android:textSize="26dp"
+                android:textStyle="normal" />
+        </RelativeLayout>
     </RelativeLayout>
 
     <androidx.constraintlayout.widget.Guideline
@@ -70,6 +69,7 @@
         android:layout_height="wrap_content"
         android:layout_marginStart="16dp"
         android:layout_marginEnd="32dp"
+        android:layout_marginBottom="5dp"
         android:background="@drawable/btn_state"
         android:elevation="10dp"
         android:text="@string/finish"
@@ -84,8 +84,9 @@
         android:layout_height="wrap_content"
         android:layout_marginStart="32dp"
         android:layout_marginEnd="16dp"
+        android:layout_marginBottom="5dp"
         android:background="@drawable/btn_state"
-        android:elevation="10dp"
+        android:elevation="5dp"
         android:text="@string/back"
         app:backgroundTint="@null"
         app:layout_constraintBottom_toBottomOf="parent"

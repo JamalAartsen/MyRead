@@ -34,8 +34,9 @@
         <entry key="..\:/androidprojecten/MyRead/MyRead/app/src/main/res/layout/fragment_start_service_onboarding.xml" value="0.264" />
         <entry key="..\:/androidprojecten/MyRead/MyRead/app/src/main/res/layout/fragment_tutorial.xml" value="0.3625" />
         <entry key="..\:/androidprojecten/MyRead/MyRead/app/src/main/res/layout/fragment_tutorial_onboarding.xml" value="0.25" />
-        <entry key="..\:/androidprojecten/MyRead/MyRead/app/src/main/res/layout/fragment_view_pager.xml" value="0.3625" />
-        <entry key="..\:/androidprojecten/MyRead/MyRead/app/src/main/res/layout/fragment_voice_settings_onboarding.xml" value="0.2" />
+        <entry key="..\:/androidprojecten/MyRead/MyRead/app/src/main/res/layout/fragment_view_pager.xml" value="0.176" />
+        <entry key="..\:/androidprojecten/MyRead/MyRead/app/src/main/res/layout/fragment_voice_settings_onboarding.xml" value="0.152" />
+        <entry key="..\:/androidprojecten/MyRead/MyRead/app/src/main/res/layout/read_button.xml" value="0.25" />
         <entry key="..\:/androidprojecten/MyRead/MyRead/app/src/main/res/layout/screen_reader_item.xml" value="0.33" />
         <entry key="..\:/androidprojecten/MyRead/MyRead/app/src/main/res/mipmap-anydpi-v26/ic_launcher_round.xml" value="0.3769230769230769" />
         <entry key="..\:/androidprojecten/MyRead/MyRead/app/src/main/res/xml/file_paths.xml" value="0.16666666666666666" />
