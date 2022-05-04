@@ -6,6 +6,7 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
+import com.google.android.material.tabs.TabLayoutMediator
 import com.jamal.myread.databinding.FragmentViewPagerBinding
 import com.jamal.myread.ui.adapters.ViewPagerAdapter
 import com.jamal.myread.viewmodel.NavigateViewPagerViewModel
@@ -45,6 +46,9 @@ class ViewPagerFragment : Fragment() {
         navigateViewPagerViewModel.item.observe(viewLifecycleOwner) {
             binding.viewPager.setCurrentItem(it, true)
         }
+
+        TabLayoutMediator(binding.tabLayout, binding.viewPager) { tab, positon ->
+        }.attach()
     }
 
     override fun onDestroy() {
