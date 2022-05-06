@@ -30,6 +30,8 @@ import javax.inject.Inject
 import android.app.ActivityManager
 import android.content.Context
 import com.jamal.myread.model.ScreenReaderService
+import com.jamal.myread.sharedpreferences.SharedPreferencesKeys
+import com.jamal.myread.sharedpreferences.SharedPreferencesManager
 
 private const val ALERT_DIALOG = "AlertDialog"
 
@@ -166,10 +168,31 @@ class HomeFragment : Fragment(R.layout.fragment_home), SeekBar.OnSeekBarChangeLi
     @Subscribe(sticky = true, threadMode = ThreadMode.MAIN)
     fun onMessageEvent(event: MessageEvent) {
         Log.d(TAG, "onMessageEvent: ${event.message}")
+
+        if (SharedPreferencesManager.getServiceRunningAppKilled(
+                requireActivity(),
+                SharedPreferencesKeys.IS_SERVICE_RUNNING_APP_KILLED
+            )
+        ) {
+            enableElements(false)
+            Log.d("OnMessageEvent", ": False")
+            SharedPreferencesManager.saveServiceRunningAppKilled(
+                requireActivity(),
+                SharedPreferencesKeys.IS_SERVICE_RUNNING_APP_KILLED,
+                false
+            )
+        } else {
+            enableElements(true)
+            Log.d("OnMessageEvent", ": True")
+        }
+    }
+
+
+    private fun enableElements(isEnabled: Boolean) {
         binding.apply {
-            seekbarPitch.isEnabled = true
-            seekbarSpeed.isEnabled = true
-            startButton.isEnabled = true
+            seekbarPitch.isEnabled = isEnabled
+            seekbarSpeed.isEnabled = isEnabled
+            startButton.isEnabled = isEnabled
         }
     }
 
@@ -206,9 +229,20 @@ class HomeFragment : Fragment(R.layout.fragment_home), SeekBar.OnSeekBarChangeLi
         EventBus.getDefault().unregister(this)
     }
 
+    override fun onDestroyView() {
+        super.onDestroyView()
+        _binding = null
+    }
+
     override fun onDestroy() {
         super.onDestroy()
-        _binding = null
+        if (isMyServiceRunning(ScreenReaderService::class.java)) {
+            SharedPreferencesManager.saveServiceRunningAppKilled(
+                requireActivity(),
+                SharedPreferencesKeys.IS_SERVICE_RUNNING_APP_KILLED,
+                true
+            )
+        }
     }
 
     override fun onProgressChanged(seekBar: SeekBar?, progress: Int, fromUser: Boolean) {

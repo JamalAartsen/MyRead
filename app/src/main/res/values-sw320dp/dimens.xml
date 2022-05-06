@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <dimen name="text_size_on_boarding_description">20dp</dimen>
+    <dimen name="text_size_on_boarding_titel">24dp</dimen>
+
+    <dimen name="image_width_onBoarding">150dp</dimen>
+</resources>

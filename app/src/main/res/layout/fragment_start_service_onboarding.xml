@@ -12,8 +12,8 @@
 
         <ImageView
             android:id="@+id/hello_person"
-            android:layout_width="200dp"
-            android:layout_height="200dp"
+            android:layout_width="@dimen/image_width_onBoarding"
+            android:layout_height="@dimen/image_width_onBoarding"
             android:layout_centerHorizontal="true"
             app:srcCompat="@drawable/ic_hello" />
 
@@ -33,7 +33,7 @@
                 android:text="@string/introduction"
                 android:textAlignment="center"
                 android:textColor="@color/white"
-                android:textSize="30dp"
+                android:textSize="@dimen/text_size_on_boarding_titel"
                 android:textStyle="bold" />
 
             <TextView
@@ -45,7 +45,7 @@
                 android:text="@string/introduction_text"
                 android:textAlignment="center"
                 android:textColor="@color/white"
-                android:textSize="26dp"
+                android:textSize="@dimen/text_size_on_boarding_description"
                 android:textStyle="normal" />
         </RelativeLayout>
     </RelativeLayout>

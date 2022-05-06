@@ -1,4 +1,4 @@
-package com.jamal.myread.utils
+package com.jamal.myread.sharedpreferences
 
 import android.app.Activity
 import android.content.Context

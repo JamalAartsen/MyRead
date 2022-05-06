@@ -15,8 +15,8 @@
 
         <ImageView
             android:id="@+id/read_person_intro"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
+            android:layout_width="@dimen/image_width_onBoarding"
+            android:layout_height="@dimen/image_width_onBoarding"
             android:layout_centerHorizontal="true"
             app:srcCompat="@drawable/ic_read_person" />
 
@@ -36,7 +36,7 @@
                 android:text="@string/intro_title"
                 android:textAlignment="center"
                 android:textColor="@color/white"
-                android:textSize="30dp"
+                android:textSize="@dimen/text_size_on_boarding_titel"
                 android:textStyle="bold" />
 
             <TextView
@@ -48,7 +48,7 @@
                 android:text="@string/intro_subtitle"
                 android:textAlignment="center"
                 android:textColor="@color/white"
-                android:textSize="26dp"
+                android:textSize="@dimen/text_size_on_boarding_description"
                 android:textStyle="normal" />
         </RelativeLayout>
 

@@ -12,8 +12,8 @@ import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.findNavController
 import com.jamal.myread.R
 import com.jamal.myread.databinding.FragmentSplashBinding
-import com.jamal.myread.utils.Constants
-import com.jamal.myread.utils.SharedPreferenceOnBoarding
+import com.jamal.myread.sharedpreferences.SharedPreferenceOnBoarding
+import com.jamal.myread.sharedpreferences.SharedPreferencesKeys
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.launch
 
@@ -41,7 +41,10 @@ class SplashFragment : Fragment() {
 
         Handler(Looper.getMainLooper()).postDelayed({
             viewLifecycleOwner.lifecycleScope.launch {
-                if (SharedPreferenceOnBoarding.getPreferences(requireActivity(), Constants.ON_BOARDING_IS_FINISHED)
+                if (SharedPreferenceOnBoarding.getPreferences(
+                        requireActivity(),
+                        SharedPreferencesKeys.ON_BOARDING_IS_FINISHED
+                    )
                 ) {
                     findNavController().navigate(R.id.action_mainFragment_to_homeFragment)
                 } else {

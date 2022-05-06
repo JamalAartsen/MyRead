@@ -9,8 +9,8 @@ import androidx.fragment.app.viewModels
 import androidx.navigation.fragment.findNavController
 import com.jamal.myread.R
 import com.jamal.myread.databinding.FragmentVoiceSettingsOnboardingBinding
-import com.jamal.myread.utils.Constants
-import com.jamal.myread.utils.SharedPreferenceOnBoarding
+import com.jamal.myread.sharedpreferences.SharedPreferenceOnBoarding
+import com.jamal.myread.sharedpreferences.SharedPreferencesKeys
 import com.jamal.myread.viewmodel.NavigateViewPagerViewModel
 import dagger.hilt.android.AndroidEntryPoint
 
@@ -40,7 +40,7 @@ class VoiceSettingsOnBoardingFragment : Fragment() {
                     .navigate(R.id.action_viewPagerFragment_to_homeFragment)
                 SharedPreferenceOnBoarding.savePreferences(
                     requireActivity(),
-                    Constants.ON_BOARDING_IS_FINISHED,
+                    SharedPreferencesKeys.ON_BOARDING_IS_FINISHED,
                     true
                 )
             }
