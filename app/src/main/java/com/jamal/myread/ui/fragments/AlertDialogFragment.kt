@@ -12,6 +12,9 @@ import androidx.activity.result.contract.ActivityResultContracts
 import androidx.fragment.app.DialogFragment
 import dagger.hilt.android.AndroidEntryPoint
 
+/**
+ * TODO Business logic code need to be in a ViewModel Class.
+ */
 @AndroidEntryPoint
 class AlertDialogFragment: DialogFragment() {
 

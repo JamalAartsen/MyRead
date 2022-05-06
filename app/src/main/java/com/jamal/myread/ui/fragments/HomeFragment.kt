@@ -35,6 +35,10 @@ import com.jamal.myread.sharedpreferences.SharedPreferencesManager
 
 private const val ALERT_DIALOG = "AlertDialog"
 
+/**
+ * TODO All the if loops needs to be in a ViewModel Class.
+ * This Fragment may only have code related to the UI, there can't be any business logic code in here.
+ */
 @AndroidEntryPoint
 class HomeFragment : Fragment(R.layout.fragment_home), SeekBar.OnSeekBarChangeListener {
 
@@ -245,6 +249,7 @@ class HomeFragment : Fragment(R.layout.fragment_home), SeekBar.OnSeekBarChangeLi
         }
     }
 
+    // If loops needs to be in viewmodel
     override fun onProgressChanged(seekBar: SeekBar?, progress: Int, fromUser: Boolean) {
         seekBar.let {
             if (binding.seekbarSpeed === it) {

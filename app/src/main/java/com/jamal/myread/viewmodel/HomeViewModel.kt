@@ -16,9 +16,7 @@ class HomeViewModel @Inject constructor(
 ) : ViewModel() {
 
     fun startService(activity: Activity, context: Context, resultCode: Int, data: Intent, pitch: Float?, speed: Float?) {
-
         val pitchValue = pitch ?: 1f
-
         val speedValue = speed ?: 1f
 
         repository.startService(activity, context, resultCode, data, pitchValue, speedValue)

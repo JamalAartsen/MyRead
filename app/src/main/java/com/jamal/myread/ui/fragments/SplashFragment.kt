@@ -17,6 +17,9 @@ import com.jamal.myread.sharedpreferences.SharedPreferencesKeys
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.launch
 
+/**
+ * TODO Business logic code need to be in a ViewModel Class.
+ */
 @AndroidEntryPoint
 class SplashFragment : Fragment() {
 
