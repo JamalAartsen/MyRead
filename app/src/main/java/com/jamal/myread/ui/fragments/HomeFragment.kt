@@ -27,18 +27,11 @@ import org.greenrobot.eventbus.EventBus
 import org.greenrobot.eventbus.Subscribe
 import org.greenrobot.eventbus.ThreadMode
 import javax.inject.Inject
-import android.app.ActivityManager
-import android.content.Context
-import com.jamal.myread.model.ScreenReaderService
-import com.jamal.myread.sharedpreferences.SharedPreferencesKeys
-import com.jamal.myread.sharedpreferences.SharedPreferencesManager
+import com.jamal.myread.viewmodel.Result
+import kotlinx.coroutines.flow.collect
 
 private const val ALERT_DIALOG = "AlertDialog"
 
-/**
- * TODO All the if loops needs to be in a ViewModel Class.
- * This Fragment may only have code related to the UI, there can't be any business logic code in here.
- */
 @AndroidEntryPoint
 class HomeFragment : Fragment(R.layout.fragment_home), SeekBar.OnSeekBarChangeListener {
 
@@ -54,22 +47,16 @@ class HomeFragment : Fragment(R.layout.fragment_home), SeekBar.OnSeekBarChangeLi
     private val getResult = registerForActivityResult(
         ActivityResultContracts.StartActivityForResult()
     ) {
-        if (it.resultCode == Activity.RESULT_OK) {
-            viewModel.startService(
+        viewLifecycleOwner.lifecycleScope.launch {
+            viewModel.checkResult(
+                it.resultCode,
+                Activity.RESULT_OK,
                 requireActivity(),
                 requireContext(),
-                it.resultCode,
-                it.data!!,
+                it.data,
                 pitchSeekbar,
                 speedSeekbar
             )
-
-        } else {
-            binding.apply {
-                seekbarPitch.isEnabled = true
-                seekbarSpeed.isEnabled = true
-                startButton.isEnabled = true
-            }
         }
     }
 
@@ -91,12 +78,28 @@ class HomeFragment : Fragment(R.layout.fragment_home), SeekBar.OnSeekBarChangeLi
 
         setSettingsVoice(binding)
 
-        if (isMyServiceRunning(ScreenReaderService::class.java)) {
-            binding.apply {
-                seekbarPitch.isEnabled = false
-                seekbarSpeed.isEnabled = false
-                startButton.isEnabled = false
+        viewLifecycleOwner.lifecycleScope.launchWhenStarted {
+            viewModel.result.collect { result ->
+                when(result) {
+                    is Result.EnableElements -> {
+                        enableElements(true)
+                    }
+                    is Result.PermissionTrue -> {
+                        val mProjectionManager =
+                            requireActivity().getSystemService(AppCompatActivity.MEDIA_PROJECTION_SERVICE) as MediaProjectionManager
+                        getResult.launch(mProjectionManager.createScreenCaptureIntent())
+                        enableElements(false)
+                    }
+                    is Result.PermissionFalse -> {
+                        AlertDialogFragment().show(parentFragmentManager, ALERT_DIALOG)
+                    }
+                    is Result.DisableElementsIfServiceRunningAndApp -> enableElements(false)
+                }
             }
+        }
+
+        viewLifecycleOwner.lifecycleScope.launch {
+            viewModel.checkIfServiceIsRunningAndAppDisableElements(requireActivity())
         }
 
         viewLifecycleOwner.lifecycleScope.launch {
@@ -113,37 +116,10 @@ class HomeFragment : Fragment(R.layout.fragment_home), SeekBar.OnSeekBarChangeLi
         }
 
         binding.startButton.setOnClickListener {
-            if (viewModel.checkOverlayPermission(requireContext())) {
-                val mProjectionManager =
-                    requireActivity().getSystemService(AppCompatActivity.MEDIA_PROJECTION_SERVICE) as MediaProjectionManager
-                getResult.launch(mProjectionManager.createScreenCaptureIntent())
-                binding.apply {
-                    seekbarSpeed.isEnabled = false
-                    seekbarPitch.isEnabled = false
-                    startButton.isEnabled = false
-                }
-            } else {
-                AlertDialogFragment().show(parentFragmentManager, ALERT_DIALOG)
+            viewLifecycleOwner.lifecycleScope.launch {
+                viewModel.isPermissionGiven(requireContext())
             }
         }
-    }
-
-    /**
-     * Checks if a given service class is running.
-     *
-     * @param serviceClass Given Service class you want to know if it is running
-     *
-     * @author Jamal Aartsen
-     */
-    private fun isMyServiceRunning(serviceClass: Class<*>): Boolean {
-        val manager =
-            requireActivity().getSystemService(Context.ACTIVITY_SERVICE) as ActivityManager?
-        for (service in manager!!.getRunningServices(Int.MAX_VALUE)) {
-            if (serviceClass.name.equals(service.service.className)) {
-                return true
-            }
-        }
-        return false
     }
 
     /**
@@ -172,23 +148,7 @@ class HomeFragment : Fragment(R.layout.fragment_home), SeekBar.OnSeekBarChangeLi
     @Subscribe(sticky = true, threadMode = ThreadMode.MAIN)
     fun onMessageEvent(event: MessageEvent) {
         Log.d(TAG, "onMessageEvent: ${event.message}")
-
-        if (SharedPreferencesManager.getServiceRunningAppKilled(
-                requireActivity(),
-                SharedPreferencesKeys.IS_SERVICE_RUNNING_APP_KILLED
-            )
-        ) {
-            enableElements(false)
-            Log.d("OnMessageEvent", ": False")
-            SharedPreferencesManager.saveServiceRunningAppKilled(
-                requireActivity(),
-                SharedPreferencesKeys.IS_SERVICE_RUNNING_APP_KILLED,
-                false
-            )
-        } else {
-            enableElements(true)
-            Log.d("OnMessageEvent", ": True")
-        }
+       enableElements(true)
     }
 
 
@@ -238,18 +198,6 @@ class HomeFragment : Fragment(R.layout.fragment_home), SeekBar.OnSeekBarChangeLi
         _binding = null
     }
 
-    override fun onDestroy() {
-        super.onDestroy()
-        if (isMyServiceRunning(ScreenReaderService::class.java)) {
-            SharedPreferencesManager.saveServiceRunningAppKilled(
-                requireActivity(),
-                SharedPreferencesKeys.IS_SERVICE_RUNNING_APP_KILLED,
-                true
-            )
-        }
-    }
-
-    // If loops needs to be in viewmodel
     override fun onProgressChanged(seekBar: SeekBar?, progress: Int, fromUser: Boolean) {
         seekBar.let {
             if (binding.seekbarSpeed === it) {
