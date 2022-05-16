@@ -2,8 +2,7 @@ package com.jamal.myread.sharedpreferences
 
 import android.app.Activity
 import android.content.Context
-
-private const val ON_BOARDING_PREFERENCES = "OnBoardingPreferences"
+import com.jamal.myread.sharedpreferences.SharedPreferencesKeys.ON_BOARDING_PREFERENCES
 
 object SharedPreferenceOnBoarding {
 

@@ -24,4 +24,7 @@
     <string name="read_item_text">When you have clicked on the start button, another button appears. Just click on it and your phone will read the text out loud.</string>
     <string name="read_button">Read Button</string>
     <string name="back">Back</string>
+    <string name="screen_overlay_permission">Screen Overlay Permission Needed</string>
+    <string name="enable_settings_overlay">Enable "'Display over the App'" from settings</string>
+    <string name="open_settings">Open Settings</string>
 </resources>

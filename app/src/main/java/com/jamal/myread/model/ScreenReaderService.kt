@@ -262,7 +262,7 @@ class ScreenReaderService : Service() {
         when {
             isStartCommand(intent) -> {
                 val notification = NotificationUtils.getNotification(this)
-                startForeground(notification!!.first, notification.second)
+                startForeground(notification.first, notification.second)
 
                 resultCode = intent.getIntExtra(RESULT_CODE, Activity.RESULT_CANCELED)
                 data = intent.getParcelableExtra(DATA)

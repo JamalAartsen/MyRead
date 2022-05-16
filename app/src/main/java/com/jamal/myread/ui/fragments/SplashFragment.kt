@@ -8,23 +8,21 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.view.animation.AnimationUtils
+import androidx.fragment.app.viewModels
 import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.findNavController
 import com.jamal.myread.R
 import com.jamal.myread.databinding.FragmentSplashBinding
-import com.jamal.myread.sharedpreferences.SharedPreferenceOnBoarding
-import com.jamal.myread.sharedpreferences.SharedPreferencesKeys
 import dagger.hilt.android.AndroidEntryPoint
+import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.launch
 
-/**
- * TODO Business logic code need to be in a ViewModel Class.
- */
 @AndroidEntryPoint
 class SplashFragment : Fragment() {
 
     private var _binding: FragmentSplashBinding? = null
     private val binding get() = _binding!!
+    private val splashViewModel by viewModels<SplashViewModel>()
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -42,17 +40,18 @@ class SplashFragment : Fragment() {
         animation.duration = 500
         binding.imageViewSplash?.startAnimation(animation)
 
+        viewLifecycleOwner.lifecycleScope.launchWhenStarted {
+            splashViewModel.navigate.collect {
+                when (it) {
+                    is NavigateTo.MainToHomeFragment -> findNavController().navigate(R.id.action_mainFragment_to_homeFragment)
+                    is NavigateTo.MainToOnBoardingFragment -> findNavController().navigate(R.id.action_mainFragment_to_viewPagerFragment)
+                }
+            }
+        }
+
         Handler(Looper.getMainLooper()).postDelayed({
             viewLifecycleOwner.lifecycleScope.launch {
-                if (SharedPreferenceOnBoarding.getPreferences(
-                        requireActivity(),
-                        SharedPreferencesKeys.ON_BOARDING_IS_FINISHED
-                    )
-                ) {
-                    findNavController().navigate(R.id.action_mainFragment_to_homeFragment)
-                } else {
-                    findNavController().navigate(R.id.action_mainFragment_to_viewPagerFragment)
-                }
+                splashViewModel.navigateTo(requireActivity())
             }
         }, 1000)
     }

@@ -40,7 +40,7 @@ class HomeFragment : Fragment(R.layout.fragment_home), SeekBar.OnSeekBarChangeLi
     private var _binding: FragmentHomeBinding? = null
     private val binding get() = _binding!!
     private val TAG = "HomeFragment"
-    private val viewModel by viewModels<HomeViewModel>()
+    private val homeViewModel by viewModels<HomeViewModel>()
     private var pitchSeekbar: Float? = null
     private var speedSeekbar: Float? = null
 
@@ -50,7 +50,7 @@ class HomeFragment : Fragment(R.layout.fragment_home), SeekBar.OnSeekBarChangeLi
         ActivityResultContracts.StartActivityForResult()
     ) {
         viewLifecycleOwner.lifecycleScope.launch {
-            viewModel.checkResult(
+            homeViewModel.checkResult(
                 it.resultCode,
                 Activity.RESULT_OK,
                 requireActivity(),
@@ -80,11 +80,11 @@ class HomeFragment : Fragment(R.layout.fragment_home), SeekBar.OnSeekBarChangeLi
 
         setSettingsVoice(binding)
         viewLifecycleOwner.lifecycleScope.launch {
-            viewModel.showMessageTTSEngines(requireContext())
+            homeViewModel.showMessageTTSEngines(requireContext())
         }
 
         viewLifecycleOwner.lifecycleScope.launchWhenStarted {
-            viewModel.result.collect { result ->
+            homeViewModel.result.collect { result ->
                 when (result) {
                     is Result.EnableElements -> {
                         enableElements(true)
@@ -116,7 +116,7 @@ class HomeFragment : Fragment(R.layout.fragment_home), SeekBar.OnSeekBarChangeLi
         }
 
         viewLifecycleOwner.lifecycleScope.launch {
-            viewModel.checkIfServiceIsRunningAndAppDisableElements(requireActivity())
+            homeViewModel.checkIfServiceIsRunningAndAppDisableElements(requireActivity())
         }
 
         viewLifecycleOwner.lifecycleScope.launch {
@@ -134,7 +134,7 @@ class HomeFragment : Fragment(R.layout.fragment_home), SeekBar.OnSeekBarChangeLi
 
         binding.startButton.setOnClickListener {
             viewLifecycleOwner.lifecycleScope.launch {
-                viewModel.isPermissionGiven(requireContext())
+                homeViewModel.isPermissionGiven(requireContext())
             }
         }
     }

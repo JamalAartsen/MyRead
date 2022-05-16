@@ -15,7 +15,7 @@ object NotificationUtils {
     private const val NOTIFICATION_CHANNEL_ID = "com.jamal.myread.app"
     private const val NOTIFICATION_CHANNEL_NAME = "com.jamal.myread.app"
 
-    fun getNotification(context: Context): Pair<Int, Notification>? {
+    fun getNotification(context: Context): Pair<Int, Notification> {
         createNotificationChannel(context)
         val notification = createNotification(context)
         val notificationManager =
