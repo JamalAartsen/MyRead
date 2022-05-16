@@ -1,13 +1,13 @@
-package com.jamal.myread
+package com.jamal.myread.utils
 
 import android.content.Context
 import android.content.res.Resources
 import androidx.datastore.core.DataStore
 import androidx.datastore.preferences.core.Preferences
 import androidx.datastore.preferences.preferencesDataStore
+import com.jamal.myread.R
 
 val Context.dataStore: DataStore<Preferences> by preferencesDataStore(name = "voice_Settings")
-val Context.dataStoreOnBoarding: DataStore<Preferences> by preferencesDataStore(name = "on_boarding")
 
 /**
  * Sets the sizes of the textviews and image of the onboarding screen to an amount if the screen

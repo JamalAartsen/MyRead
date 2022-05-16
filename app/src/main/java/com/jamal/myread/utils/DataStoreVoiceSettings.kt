@@ -4,7 +4,6 @@ import android.content.Context
 import androidx.datastore.preferences.core.Preferences
 import androidx.datastore.preferences.core.edit
 import androidx.datastore.preferences.core.floatPreferencesKey
-import com.jamal.myread.dataStore
 import kotlinx.coroutines.flow.first
 import javax.inject.Inject
 

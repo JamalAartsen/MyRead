@@ -1,16 +1,13 @@
 package com.jamal.myread.ui.fragments.onBoarding
 
-import android.os.Build
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import androidx.annotation.RequiresApi
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
-import com.jamal.myread.R
 import com.jamal.myread.databinding.FragmentReadItemOnboardingBinding
-import com.jamal.myread.setSizesOnBoarding
+import com.jamal.myread.utils.setSizesOnBoarding
 import com.jamal.myread.viewmodel.NavigateViewPagerViewModel
 
 class ReadItemOnBoardingFragment : Fragment() {

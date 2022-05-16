@@ -9,7 +9,7 @@ import androidx.fragment.app.viewModels
 import androidx.navigation.fragment.findNavController
 import com.jamal.myread.R
 import com.jamal.myread.databinding.FragmentVoiceSettingsOnboardingBinding
-import com.jamal.myread.setSizesOnBoarding
+import com.jamal.myread.utils.setSizesOnBoarding
 import com.jamal.myread.sharedpreferences.SharedPreferenceOnBoarding
 import com.jamal.myread.sharedpreferences.SharedPreferencesKeys
 import com.jamal.myread.viewmodel.NavigateViewPagerViewModel
