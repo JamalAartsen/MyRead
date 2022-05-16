@@ -3,6 +3,7 @@ package com.jamal.myread.ui.fragments
 import android.animation.ObjectAnimator
 import android.app.Activity
 import android.media.projection.MediaProjectionManager
+import android.os.Build
 import android.os.Bundle
 import android.util.Log
 import android.view.LayoutInflater
@@ -84,7 +85,7 @@ class HomeFragment : Fragment(R.layout.fragment_home), SeekBar.OnSeekBarChangeLi
 
         viewLifecycleOwner.lifecycleScope.launchWhenStarted {
             viewModel.result.collect { result ->
-                when(result) {
+                when (result) {
                     is Result.EnableElements -> {
                         enableElements(true)
                     }
@@ -100,6 +101,15 @@ class HomeFragment : Fragment(R.layout.fragment_home), SeekBar.OnSeekBarChangeLi
                     is Result.DisableElementsIfServiceRunningAndApp -> enableElements(false)
                     is Result.TTSEngineNotAvailable -> {
                         Snackbar.make(binding.root, result.message, Snackbar.LENGTH_LONG).show()
+                        enableElements(false)
+                        binding.uitlegText.run {
+                            text = result.message
+                            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+                                setTextColor(resources.getColor(R.color.red, null))
+                            } else {
+                                setTextColor(resources.getColor(R.color.red))
+                            }
+                        }
                     }
                 }
             }
@@ -155,7 +165,7 @@ class HomeFragment : Fragment(R.layout.fragment_home), SeekBar.OnSeekBarChangeLi
     @Subscribe(sticky = true, threadMode = ThreadMode.MAIN)
     fun onMessageEvent(event: MessageEvent) {
         Log.d(TAG, "onMessageEvent: ${event.message}")
-       enableElements(true)
+        enableElements(true)
     }
 
 
