@@ -2,8 +2,10 @@ package com.jamal.myread.ui.activities
 
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
-import android.util.DisplayMetrics
+import android.speech.tts.TextToSpeech
 import android.util.Log
+import android.widget.Toast
+import androidx.activity.viewModels
 import androidx.core.content.ContextCompat
 import com.jamal.myread.R
 import com.jamal.myread.databinding.ActivityMainBinding
@@ -23,5 +25,6 @@ class MainActivity : AppCompatActivity() {
         val heightDp = resources.displayMetrics.run { heightPixels / density }
         Log.d("SizeScreen", "Height: $heightDp")
         Log.d("SizeScreen", "Width: $widthDp")
+
     }
 }

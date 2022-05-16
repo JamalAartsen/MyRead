@@ -9,6 +9,7 @@ import androidx.fragment.app.viewModels
 import androidx.navigation.fragment.findNavController
 import com.jamal.myread.R
 import com.jamal.myread.databinding.FragmentVoiceSettingsOnboardingBinding
+import com.jamal.myread.setSizesOnBoarding
 import com.jamal.myread.sharedpreferences.SharedPreferenceOnBoarding
 import com.jamal.myread.sharedpreferences.SharedPreferencesKeys
 import com.jamal.myread.viewmodel.NavigateViewPagerViewModel
@@ -46,6 +47,16 @@ class VoiceSettingsOnBoardingFragment : Fragment() {
             }
             btnBackVoiceSettings.setOnClickListener {
                 navigateViewPagerViewModel.navigateTo(2)
+            }
+        }
+
+        val sizes = setSizesOnBoarding(resources)
+
+        binding.run {
+            if (sizes != null) {
+                voiceSettingsTitle.textSize = sizes.titleSize
+                voiceSettingsText.textSize = sizes.descriptionSize
+                voicePerson.layoutParams.width = resources.getDimensionPixelSize(R.dimen.image_width_100)
             }
         }
     }

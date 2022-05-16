@@ -15,6 +15,7 @@ import androidx.core.content.ContextCompat
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.lifecycleScope
+import com.google.android.material.snackbar.Snackbar
 import com.jamal.myread.R
 import com.jamal.myread.databinding.FragmentHomeBinding
 import com.jamal.myread.model.MessageEvent
@@ -77,6 +78,9 @@ class HomeFragment : Fragment(R.layout.fragment_home), SeekBar.OnSeekBarChangeLi
         super.onViewCreated(view, savedInstanceState)
 
         setSettingsVoice(binding)
+        viewLifecycleOwner.lifecycleScope.launch {
+            viewModel.showMessageTTSEngines(requireContext())
+        }
 
         viewLifecycleOwner.lifecycleScope.launchWhenStarted {
             viewModel.result.collect { result ->
@@ -94,6 +98,9 @@ class HomeFragment : Fragment(R.layout.fragment_home), SeekBar.OnSeekBarChangeLi
                         AlertDialogFragment().show(parentFragmentManager, ALERT_DIALOG)
                     }
                     is Result.DisableElementsIfServiceRunningAndApp -> enableElements(false)
+                    is Result.TTSEngineNotAvailable -> {
+                        Snackbar.make(binding.root, result.message, Snackbar.LENGTH_LONG).show()
+                    }
                 }
             }
         }

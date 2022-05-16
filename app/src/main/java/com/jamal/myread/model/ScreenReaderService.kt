@@ -303,6 +303,7 @@ class ScreenReaderService : Service() {
                     this, "Initialization failed!",
                     Toast.LENGTH_SHORT
                 ).show()
+                Log.d(TAG, "$status")
             }
         }
         return START_NOT_STICKY

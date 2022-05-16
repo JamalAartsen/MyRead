@@ -7,6 +7,7 @@ import android.view.ViewGroup
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import com.jamal.myread.databinding.FragmentStartServiceOnboardingBinding
+import com.jamal.myread.setSizesOnBoarding
 import com.jamal.myread.viewmodel.NavigateViewPagerViewModel
 
 class StartServiceOnBoardingFragment : Fragment() {
@@ -34,6 +35,16 @@ class StartServiceOnBoardingFragment : Fragment() {
             }
             btnBackStartService.setOnClickListener {
                 navigateViewPagerViewModel.navigateTo(0)
+            }
+        }
+
+        val sizes = setSizesOnBoarding(resources)
+
+        binding.run {
+            if (sizes != null) {
+                introductionTitle.textSize = sizes.titleSize
+                introductionText.textSize = sizes.descriptionSize
+                helloPerson.layoutParams.width = sizes.imageSize
             }
         }
     }

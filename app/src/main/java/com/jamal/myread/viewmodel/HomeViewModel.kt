@@ -6,6 +6,7 @@ import android.content.Context
 import android.content.Intent
 import android.os.Build
 import android.provider.Settings
+import android.speech.tts.TextToSpeech
 import androidx.lifecycle.ViewModel
 import com.jamal.myread.model.HomeRepository
 import com.jamal.myread.model.ScreenReaderService
@@ -77,6 +78,16 @@ class HomeViewModel @Inject constructor(
             resultChannel.send(Result.DisableElementsIfServiceRunningAndApp)
         }
     }
+
+    private fun checkForTTSEngines(context: Context): List<TextToSpeech.EngineInfo>? {
+        return TextToSpeech(context) {}.engines
+    }
+
+    suspend fun showMessageTTSEngines(context: Context) {
+        if (checkForTTSEngines(context)?.isEmpty() == true) {
+            resultChannel.send(Result.TTSEngineNotAvailable("There is no TextToSpeech Engine available on your phone."))
+        }
+    }
 }
 
 sealed class Result {
@@ -84,4 +95,5 @@ sealed class Result {
     object PermissionTrue: Result()
     object PermissionFalse: Result()
     object DisableElementsIfServiceRunningAndApp: Result()
+    class TTSEngineNotAvailable(val message: String) : Result()
 }

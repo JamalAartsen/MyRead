@@ -1,14 +1,17 @@
 package com.jamal.myread.ui.fragments.onBoarding
 
+import android.os.Build
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.annotation.RequiresApi
 import androidx.core.content.ContextCompat
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import com.jamal.myread.R
 import com.jamal.myread.databinding.FragmentGetStartedOnboardingBinding
+import com.jamal.myread.setSizesOnBoarding
 import com.jamal.myread.viewmodel.NavigateViewPagerViewModel
 
 class GetStartedOnBoardingFragment : Fragment() {
@@ -37,6 +40,16 @@ class GetStartedOnBoardingFragment : Fragment() {
 
         binding.introGetStartedBtn.setOnClickListener {
             navigateViewPagerViewModel.navigateTo(1)
+        }
+
+        val sizes = setSizesOnBoarding(resources)
+
+        binding.run {
+            if (sizes != null) {
+                introTitle.textSize = sizes.titleSize
+                introSubtitle.textSize = sizes.descriptionSize
+                readPersonIntro.layoutParams.width = sizes.imageSize
+            }
         }
     }
 

@@ -4,4 +4,9 @@
     <dimen name="text_size_on_boarding_titel">30dp</dimen>
 
     <dimen name="image_width_onBoarding">200dp</dimen>
+
+    <dimen name="text_size_description_onboarding_smaller_than_430">20dp</dimen>
+    <dimen name="text_size_title_onboarding_smaller_than_430">24dp</dimen>
+    <dimen name="image_witdh_smaller_than_430">75dp</dimen>
+    <dimen name="image_width_100">100dp</dimen>
 </resources>
