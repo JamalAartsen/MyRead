@@ -33,6 +33,16 @@ import java.io.IOException
 import java.lang.Exception
 import java.util.*
 
+private const val FILE_PROVIDER = "com.myread.android.fileprovider"
+private const val SCREEN_SHOTS_PATH = "/screenshots/"
+private const val FAILED_CREATE_FILE_STORAGE = "Failed to create file storage directory"
+private const val GET_EXTERNAL_FILES_IS_NULL = "Failed to create file storage directory, getExternalFilesDir is null."
+private const val NO_URI = "No URI's found."
+private const val TASK_FAILED = "Task failed!"
+private const val IMAGE_IS_NULL = "Image is null"
+private const val LANGUAGE_NOT_SUPPORTED = "Language not supported!"
+private const val MEDIA_PROJECTION_STOPPED = "Mediaprojection stopped"
+
 class ScreenReaderService : Service() {
     private lateinit var floatView: ViewGroup
     private lateinit var floatWindowLayoutParams: WindowManager.LayoutParams
@@ -72,16 +82,16 @@ class ScreenReaderService : Service() {
 
         binding.readerBtn.setOnClickListener {
             if (mMediaProjection != null) {
-                mMediaProjection!!.stop()
+                mMediaProjection?.stop()
             } else {
-                Log.d("NULL", "onCreate: Media is null")
+                Log.d(TAG, "MediaProjection is null")
             }
 
             binding.readButtonContainer.visibility = View.INVISIBLE
 
             Handler(Looper.getMainLooper()).postDelayed({
 
-                startProjection(resultCode!!, data)
+                startProjection(resultCode, data)
                 getImageFromExternalStorage()
             }, 100)
             Handler(Looper.getMainLooper()).postDelayed({
@@ -128,7 +138,7 @@ class ScreenReaderService : Service() {
         var py = 0.0
 
         binding.readerBtn.setOnTouchListener { v, event ->
-            when (event!!.action) {
+            when (event.action) {
                 MotionEvent.ACTION_DOWN -> {
                     x = updatedFloatWindowLayoutParams.x.toDouble()
                     y = updatedFloatWindowLayoutParams.y.toDouble()
@@ -150,17 +160,17 @@ class ScreenReaderService : Service() {
         // create store dir
         val externalFilesDir = getExternalFilesDir(null)
         if (externalFilesDir != null) {
-            mStoreDir = externalFilesDir.absolutePath + "/screenshots/"
+            mStoreDir = externalFilesDir.absolutePath + SCREEN_SHOTS_PATH
             val storeDirectory = File(mStoreDir)
             if (!storeDirectory.exists()) {
                 val success = storeDirectory.mkdirs()
                 if (!success) {
-                    Log.e(TAG, "failed to create file storage directory.")
+                    Log.e(TAG, FAILED_CREATE_FILE_STORAGE)
                     stopSelf()
                 }
             }
         } else {
-            Log.e(TAG, "failed to create file storage directory, getExternalFilesDir is null.")
+            Log.e(TAG, GET_EXTERNAL_FILES_IS_NULL)
             stopSelf()
         }
 
@@ -182,7 +192,7 @@ class ScreenReaderService : Service() {
             try {
                 image = InputImage.fromFilePath(
                     this, FileProvider.getUriForFile(
-                        this, "com.myread.android.fileprovider",
+                        this, FILE_PROVIDER,
                         getImageFromExternalStorage()!!
                     )
                 )
@@ -190,25 +200,20 @@ class ScreenReaderService : Service() {
                 e.printStackTrace()
             }
         } else {
-            Log.d("NULL", "returnTextFromImage: Geen URI'S gevonden")
+            Log.d(TAG, NO_URI)
         }
 
         if (image != null) {
             recognizer.process(image)
                 .addOnSuccessListener { visionText ->
                     deleteAllImagesFromExternalStorage()
-
-                    for (text in visionText.textBlocks) {
-                        Log.d("VisionText", text.text)
-                    }
-
                     speak(mTTS, visionText, pitch, speed)
                 }
                 .addOnFailureListener { e ->
-                    Log.d(TAG, "Task failed! $e")
+                    Log.d(TAG, "$TASK_FAILED $e")
                 }
         } else {
-            Log.d("NULL", "returnTextFromImage: Image is null")
+            Log.d(TAG, IMAGE_IS_NULL)
         }
     }
 
@@ -232,19 +237,19 @@ class ScreenReaderService : Service() {
      * @author Jamal Aartsen
      */
     private fun deleteAllImagesFromExternalStorage() {
-        val file = File(mStoreDir!!)
+        val file = File(mStoreDir)
         val fileArray = file.listFiles()
 
         if (fileArray?.isEmpty() != null) {
             for (files in fileArray) {
                 files.delete()
-                Log.d(TAG, "deleteAllImagesFromExternalStorage: $files")
+                Log.d(TAG, "$files")
             }
         }
     }
 
     private fun getImageFromExternalStorage(): File? {
-        val file = File(mStoreDir!!)
+        val file = File(mStoreDir)
         val fileArray = file.listFiles()
         var firstFile: File? = null
 
@@ -288,15 +293,9 @@ class ScreenReaderService : Service() {
                     || result == TextToSpeech.LANG_NOT_SUPPORTED
                 ) {
                     Toast.makeText(
-                        this, "Language not supported!",
+                        this, LANGUAGE_NOT_SUPPORTED,
                         Toast.LENGTH_SHORT
                     ).show()
-
-                    if (result == TextToSpeech.LANG_NOT_SUPPORTED) {
-                        Log.d("MISSING", "onStartCommand: Missing LANG")
-                    }
-                } else {
-                    Log.d(TAG, "returnTextFromImage: Hallo")
                 }
             } else {
                 Toast.makeText(
@@ -311,15 +310,20 @@ class ScreenReaderService : Service() {
 
     override fun onDestroy() {
         super.onDestroy()
-        EventBus.getDefault().postSticky(MessageEvent("Mediaprojection stopped"))
+        EventBus.getDefault().postSticky(MessageEvent(MEDIA_PROJECTION_STOPPED))
         mTTS.stop()
         mTTS.shutdown()
     }
 
-    private fun startProjection(resultCode: Int, data: Intent?) {
+    private fun startProjection(resultCode: Int?, data: Intent?) {
         val mpManager = getSystemService(MEDIA_PROJECTION_SERVICE) as MediaProjectionManager
 
-        mMediaProjection = mpManager.getMediaProjection(resultCode, data!!)
+        if (resultCode != null && data != null) {
+            mMediaProjection = mpManager.getMediaProjection(resultCode, data)
+        } else {
+            Log.d(TAG, "ResultCode: $resultCode Data: $data")
+        }
+
         if (mMediaProjection != null) {
             // display metrics
             mDensity = Resources.getSystem().displayMetrics.densityDpi
@@ -338,7 +342,7 @@ class ScreenReaderService : Service() {
             }
 
             // register media projection stop callback
-            mMediaProjection!!.registerCallback(MediaProjectionStopCallback(), mHandler)
+            mMediaProjection?.registerCallback(MediaProjectionStopCallback(), mHandler)
         }
 
     }
@@ -346,9 +350,9 @@ class ScreenReaderService : Service() {
 
     private fun stopProjection() {
         if (mHandler != null) {
-            mHandler!!.post {
+            mHandler?.post {
                 if (mMediaProjection != null) {
-                    mMediaProjection!!.stop()
+                    mMediaProjection?.stop()
                 }
             }
         }
@@ -362,11 +366,11 @@ class ScreenReaderService : Service() {
 
         // start capture reader
         mImageReader = ImageReader.newInstance(mWidth, mHeight, PixelFormat.RGBA_8888, 1)
-        mVirtualDisplay = mMediaProjection!!.createVirtualDisplay(
+        mVirtualDisplay = mMediaProjection?.createVirtualDisplay(
             SCREENCAP_NAME, mWidth, mHeight,
-            mDensity, virtualDisplayFlags, mImageReader!!.surface, null, mHandler
+            mDensity, virtualDisplayFlags, mImageReader?.surface, null, mHandler
         )
-        mImageReader!!.setOnImageAvailableListener(ImageAvailableListener(), mHandler)
+        mImageReader?.setOnImageAvailableListener(ImageAvailableListener(), mHandler)
     }
 
     private inner class ImageAvailableListener : ImageReader.OnImageAvailableListener {
@@ -374,7 +378,7 @@ class ScreenReaderService : Service() {
             var fos: FileOutputStream? = null
             var bitmap: Bitmap? = null
             try {
-                mImageReader!!.acquireLatestImage().use { image ->
+                mImageReader?.acquireLatestImage().use { image ->
                     if (image != null) {
                         val planes = image.planes
                         val buffer = planes[0].buffer
@@ -388,18 +392,13 @@ class ScreenReaderService : Service() {
                             mHeight,
                             Bitmap.Config.ARGB_8888
                         )
-                        bitmap!!.copyPixelsFromBuffer(buffer)
+                        bitmap?.copyPixelsFromBuffer(buffer)
 
                         // write bitmap to a file
                         fos =
                             FileOutputStream("$mStoreDir/myscreen_$IMAGES_PRODUCED.png")
-                        bitmap!!.compress(Bitmap.CompressFormat.JPEG, 100, fos)
+                        bitmap?.compress(Bitmap.CompressFormat.JPEG, 100, fos)
                         IMAGES_PRODUCED++
-                        Log.e(
-                            TAG,
-                            "captured image kayo: $IMAGES_PRODUCED"
-                        )
-                        Log.d(TAG, "onImageAvailable jamal: $fos")
                     }
                 }
             } catch (e: Exception) {
@@ -407,15 +406,14 @@ class ScreenReaderService : Service() {
             } finally {
                 if (fos != null) {
                     try {
-                        fos!!.close()
+                        fos?.close()
                     } catch (ioe: IOException) {
                         ioe.printStackTrace()
                     }
                 }
                 if (bitmap != null) {
-                    bitmap!!.recycle()
+                    bitmap?.recycle()
                 }
-                Log.d(TAG, "onImageAvailable: hqhdwj")
             }
         }
     }
@@ -423,13 +421,15 @@ class ScreenReaderService : Service() {
     private inner class OrientationChangeCallback(context: Context?) :
         OrientationEventListener(context) {
         override fun onOrientationChanged(orientation: Int) {
-            val rotation = mDisplay!!.rotation
+            val rotation = mDisplay?.rotation
             if (rotation != mRotation) {
-                mRotation = rotation
+                if (rotation != null) {
+                    mRotation = rotation
+                }
                 try {
                     // clean up
-                    if (mVirtualDisplay != null) mVirtualDisplay!!.release()
-                    if (mImageReader != null) mImageReader!!.setOnImageAvailableListener(null, null)
+                    if (mVirtualDisplay != null) mVirtualDisplay?.release()
+                    if (mImageReader != null) mImageReader?.setOnImageAvailableListener(null, null)
 
                     // re-create virtual display depending on device width / height
                     createVirtualDisplay()
@@ -442,12 +442,11 @@ class ScreenReaderService : Service() {
 
     private inner class MediaProjectionStopCallback : MediaProjection.Callback() {
         override fun onStop() {
-            Log.e(TAG, "stopping projection.")
-            mHandler!!.post {
-                if (mVirtualDisplay != null) mVirtualDisplay!!.release()
-                if (mImageReader != null) mImageReader!!.setOnImageAvailableListener(null, null)
-                if (mOrientationChangeCallback != null) mOrientationChangeCallback!!.disable()
-                mMediaProjection!!.unregisterCallback(this@MediaProjectionStopCallback)
+            mHandler?.post {
+                if (mVirtualDisplay != null) mVirtualDisplay?.release()
+                if (mImageReader != null) mImageReader?.setOnImageAvailableListener(null, null)
+                if (mOrientationChangeCallback != null) mOrientationChangeCallback?.disable()
+                mMediaProjection?.unregisterCallback(this@MediaProjectionStopCallback)
             }
         }
     }
