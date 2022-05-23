@@ -451,6 +451,9 @@ class ScreenReaderService : Service() {
         }
     }
 
+    /**
+     * TODO This cause memory leak because here it get context from activity
+     */
     companion object {
         private const val RESULT_CODE = "RESULT_CODE"
         private const val DATA = "DATA"

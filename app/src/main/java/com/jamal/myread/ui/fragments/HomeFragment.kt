@@ -34,6 +34,10 @@ import kotlinx.coroutines.flow.collect
 
 private const val ALERT_DIALOG = "AlertDialog"
 
+/**
+ * TODO Context cause memory leak. Because when activity is destroyed it still has a context of
+ * TODO activity inside service
+ */
 @AndroidEntryPoint
 class HomeFragment : Fragment(R.layout.fragment_home), SeekBar.OnSeekBarChangeListener {
 
